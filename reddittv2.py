@@ -329,6 +329,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 submission = self.reddit.getSubmission()
 
                 submission.reply(comment)
+                self.dialogComponents = None
                 self.original_widget = self.original_widget[0]
                 self.dialogBoxOpen = False
             except:
@@ -344,6 +345,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 comment = self.reddit.getComment()
 
                 comment.reply(reply)
+                self.dialogComponents = None
                 self.original_widget = self.original_widget[0]
                 self.dialogBoxOpen = False
             except:
@@ -373,6 +375,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
             if exists == True:
                 self.__initAuthor(author)
+                self.dialogComponents = None
                 self.original_widget = self.original_widget[0]
                 self.dialogBoxOpen = False
 
@@ -532,7 +535,14 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         headerText = util.getHeader(self.reddit.getUsername())
         self.head.set_text(('header',[headerText, ('header', util.getMenuItems("authorComments"))]))
         # Change footer
-        self.foot.set_text("\nr/" + author.name)
+        footerText = "\nr/" + author.name
+        if len(author.trophies()) > 0:
+            footerText += "\n"
+            for trophy in author.trophies():
+                footerText += trophy.name + ", "
+            footerText = footerText[:-2]
+
+        self.foot.set_text(footerText)
         self.view = "authorComment"
 
     # Reloads the content body with subreddit by type
@@ -569,5 +579,6 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
             self.dialogBoxOpen = False
             self.original_widget = self.original_widget[0]
+            self.dialogComponents = None
 
             self.listbox.set_focus(0)
