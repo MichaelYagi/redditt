@@ -358,14 +358,21 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 subreddit = list(form_dictionary.values())[0]
 
                 self.__reinitSubmissions(subreddit,"hot")
-            except Exception as e:
+            except:
                 dialogComponents.set_error("Error getting subreddit")
         elif dialogComponents.get_title() == "User":
             exists = True
             try:
                 authorName = list(form_dictionary.values())[0]
                 author = self.reddit.getRedditInstance().redditor(authorName)
-            except Exception as e:
+
+                try:
+                    if author.id:
+                        exists = True
+                except:
+                    dialogComponents.set_error("Error getting user")
+                    exists = False
+            except:
                 dialogComponents.set_error("Error getting user")
                 exists = False
 
