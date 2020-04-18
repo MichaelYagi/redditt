@@ -126,16 +126,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                     if localIndex < (len(self.authorTextItems.values())-1):
                         localIndex += 1
                     self.listbox.set_focus(localIndex)
-            elif (key == 'enter' and self.view == "submissions") or (key == 'p' and self.lastView == "comments"):
+            elif (key == 'enter' and self.view == "submissions"):
                 self.__initComments("best", None)
-            elif (key == 'b' and self.view == "comments"):
-                self.__initComments("best", self.commentSubmissionId)
-            elif (key == 'n' and self.view == "comments"):
-                self.__initComments("new", self.commentSubmissionId)
-            elif (key == 't' and self.view == "comments"):
-                self.__initComments("top", self.commentSubmissionId)
-            elif (key == 'c' and self.view == "comments"):
-                self.__initComments("controversial", self.commentSubmissionId)
             elif key == 'p' and (self.view == "comments" or self.lastView == "submissions"):
                 headerText = util.getHeader(self.reddit.getUsername())
                 self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
@@ -149,6 +141,16 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 ])
 
                 self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
+            elif (key == 'p' and self.lastView == "comments"):
+                self.__initComments("best", self.commentSubmissionId)
+            elif (key == 'b' and self.view == "comments"):
+                self.__initComments("best", self.commentSubmissionId)
+            elif (key == 'n' and self.view == "comments"):
+                self.__initComments("new", self.commentSubmissionId)
+            elif (key == 't' and self.view == "comments"):
+                self.__initComments("top", self.commentSubmissionId)
+            elif (key == 'c' and self.view == "comments"):
+                self.__initComments("controversial", self.commentSubmissionId)
             elif key == 'a':
                 self.__initAuthor(None)
             elif key == 'h' and self.view == "submissions":
@@ -509,6 +511,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 commentKeyArray = commentKey.split("|")
                 self.reddit.setComment(commentKeyArray[0])
                 comment = self.reddit.getComment()
+                self.commentSubmissionId = comment.submission.id
                 author = comment.author
             elif self.view == "submissions":
                 focus_widget, localIndex = self.listbox.get_focus()
