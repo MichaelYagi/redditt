@@ -334,6 +334,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 submission = self.reddit.getSubmission()
 
                 submission.reply(comment)
+                self.original_widget = self.original_widget[0]
+                self.dialogBoxOpen = False
             except:
                 dialogComponents.set_error("Error submitting submission reply")
         elif dialogComponents.get_title() == "Reply":
@@ -347,6 +349,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 comment = self.reddit.getComment()
 
                 comment.reply(reply)
+                self.original_widget = self.original_widget[0]
+                self.dialogBoxOpen = False
             except:
                 dialogComponents.set_error("Error submitting comment reply")
         elif dialogComponents.get_title() == "Subreddit":
@@ -357,22 +361,24 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             except Exception as e:
                 dialogComponents.set_error("Error getting subreddit")
         elif dialogComponents.get_title() == "User":
+            exists = True
             try:
                 authorName = list(form_dictionary.values())[0]
-
                 author = self.reddit.getRedditInstance().redditor(authorName)
-
-                self.__initAuthor(author)
             except Exception as e:
                 dialogComponents.set_error("Error getting user")
+                exists = False
 
-        self.original_widget = self.original_widget[0]
-        self.dialogBoxOpen = False
+            if exists == True:
+                self.__initAuthor(author)
+                self.original_widget = self.original_widget[0]
+                self.dialogBoxOpen = False
 
     # Exit the dialog window
-    def exit_box(self, box):
-        self.original_widget = self.original_widget[0]
+    def exit_box(self, button):
+        self.dialogComponents = None
         self.dialogBoxOpen = False
+        self.original_widget = self.original_widget[0]
 
     # Open the dialog window
     def open_box(self, box):
@@ -392,10 +398,9 @@ class ReddittApplication(urwid.WidgetPlaceholder):
     def create_box(self, caption):
         self.dialogComponents = util.DialogComponents()
 
-        formFields = []
         label = caption + ": "
-        self.subredditField = urwid.Edit(caption=label)
-        formFields = [self.subredditField]
+        entry = urwid.Edit(caption=label)
+        formFields = [entry]
 
         okbutton = urwid.Button("OK")
         urwid.connect_signal(okbutton, 'click', self.process_inputs, weak_args=[self.dialogComponents])
@@ -529,25 +534,37 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
     # Reloads the content body with subreddit by type
     def __reinitSubmissions(self, subreddit, type):
-        self.subreddit_type = type
-        self.subreddit = subreddit
-        self.submissions = self.reddit.getSubList(self.subreddit,self.SUBMISSION_LIST_LIMIT,self.subreddit_type)
+        exists = True
+        try:
+            self.reddit.getRedditInstance().subreddits.search_by_name(subreddit, exact=True)
+        except:
+            exists = False
+            raise
 
-        self.currentSubmissionIndex = 0
-        self.currentCommentsIndex = 0
+        if exists == True:
+            self.submissions = self.reddit.getSubList(subreddit,self.SUBMISSION_LIST_LIMIT,type)
 
-        self.submissionItems = util.createSubmissionsList(self.submissions)
-        self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex, self.submissionItems, self.SUBLIST_LIMIT)
-        self.commentItems = util.CustomOrderedDict({})
-        self.commentTextItems = util.CustomOrderedDict({})
-        self.authorItems = util.CustomOrderedDict({})
-        self.authorTextItems = util.CustomOrderedDict({})
+            self.subreddit_type = type
+            self.subreddit = subreddit
 
-        footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage 1/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
-        self.foot.set_text(footerText)
+            self.currentSubmissionIndex = 0
+            self.currentCommentsIndex = 0
 
-        self.content[:] = urwid.SimpleListWalker([
-            urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
-        ])
+            self.submissionItems = util.createSubmissionsList(self.submissions)
+            self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex, self.submissionItems, self.SUBLIST_LIMIT)
+            self.commentItems = util.CustomOrderedDict({})
+            self.commentTextItems = util.CustomOrderedDict({})
+            self.authorItems = util.CustomOrderedDict({})
+            self.authorTextItems = util.CustomOrderedDict({})
 
-        self.listbox.set_focus(0)
+            footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage 1/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
+            self.foot.set_text(footerText)
+
+            self.content[:] = urwid.SimpleListWalker([
+                urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+            ])
+
+            self.dialogBoxOpen = False
+            self.original_widget = self.original_widget[0]
+
+            self.listbox.set_focus(0)
