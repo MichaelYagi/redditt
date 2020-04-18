@@ -115,31 +115,34 @@ def datetime_from_utc_to_local(utc_datetime):
 def getMenuItems(viewType):
     if viewType == "comments":
         return [('menu option', '[b]'),'est ',
-            ('menu option', '[p]'), 'revious ',
-            ('menu option', '[c]'), 'omment ',
-            ('menu option', '[r]'), 'eply ',
-            ('menu option', '[l]'), 'ookup user ',
-            ('menu option', '[q]'), 'uit\n',
+            ('menu option', '[n]'), 'ew ',
+            ('menu option', '[c]'), 'ontroversial ',
+            ('menu option', '[t]'), 'op\n',
             ('menu option', '[u]'), 'pvote ',
             ('menu option', '[d]'), 'ownvote clear',
-            ('menu option', '[v]'), 'ote ',
-            ('menu option', '[a]'), 'uthor scroll',
-            ('menu option', '[t]'), 'op\n\n'
+            ('menu option', '[v]'), 'ote co',
+            ('menu option', '[m]'), 'ment ',
+            ('menu option', '[r]'), 'eply ',
+            ('menu option', '[a]'), 'uthor\n',
+            ('menu option', '[s]'), 'croll top ',
+            ('menu option', '[p]'), 'revious ',
+            ('menu option', '[l]'), 'ookup user ',
+            ('menu option', '[q]'), 'uit\n\n',
         ]
     elif viewType == "submission":
         return [('menu option', '[h]'),'ot ',
-            ('menu option', '[n]'), 'ew ',
             ('menu option', '[r]'), 'ising ',
+            ('menu option', '[n]'), 'ew ',
             ('menu option', '[c]'), 'ontroversial ',
-            ('menu option', '[t]'), 'op ',
-            ('menu option', '[/]'), 'subreddit ',
-            ('menu option', '[l]'), 'ookup user ',
-            ('menu option', '[enter]'), ' ',
-            ('menu option', '[q]'), 'uit\n',
+            ('menu option', '[t]'), 'op\n',
             ('menu option', '[u]'), 'pvote ',
             ('menu option', '[d]'), 'ownvote clear',
             ('menu option', '[v]'), 'ote ',
-            ('menu option', '[a]'), 'uthor\n\n'
+            ('menu option', '[a]'), 'uthor\n',
+            ('menu option', '[/]'), 'subreddit ',
+            ('menu option', '[l]'), 'ookup user ',
+            ('menu option', '[enter]'), 'comments ',
+            ('menu option', '[q]'), 'uit\n\n'
         ]
     elif viewType == "authorComments":
         return [('menu option', '[p]'), 'revious \n\n']

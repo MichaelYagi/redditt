@@ -20,6 +20,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.subreddit = "all"
         self.subreddit_type = "hot"
         self.submissions = self.reddit.getSubList(self.subreddit,self.SUBMISSION_LIST_LIMIT,self.subreddit_type)
+        self.commentSubmissionId = None
 
         self.currentSubmissionIndex = 0
         self.currentCommentsIndex = 0
@@ -43,7 +44,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         headText = util.getHeader(self.reddit.getUsername())
         self.head = urwid.Text(('header',[headText, ('header', (util.getMenuItems("submission")))]), wrap='clip')    
         
-        footText = "r/"+self.subreddit+" - "+self.subreddit_type+"\nPage 1/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
+        footText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage 1/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
         self.foot = urwid.Text(('footer',footText), wrap='clip')
 
         self.frame = urwid.Frame(self.listbox, header=self.head, footer=self.foot)
@@ -125,44 +126,15 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                     localIndex += 1
                 self.listbox.set_focus(localIndex)
         elif (key == 'enter' and self.view == "submissions") or (key == 'p' and self.lastView == "comments") and self.boxOpen == False:
-            focus_widget, localIndex = self.listbox.get_focus()
-
-            # Get the submission ID
-            submissionId = list(self.submissionTextItems.keys())[localIndex]
-            self.reddit.setSubmission(submissionId)
-            submission = self.reddit.getSubmission()
-            comments = self.reddit.getSubmissionComments("best")
-
-            comTextItems = util.CustomOrderedDict({})
-            submissionText = str(submission.title)
-            if len(submission.url) > 0:
-                submissionText += "\n" + submission.url
-            if len(submission.selftext) > 0:
-                submissionText += "\n----------\n" + submission.selftext
-            submissionText += "\n==========\n"
-            comTextItems.append("comment_title", main.SelectableText(submissionText))
-            self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems)
-
-            headerText = util.getHeader(self.reddit.getUsername())
-            
-            if len(comTextItems)-1 > 0:
-                self.head.set_text(('header',[headerText, ('header', util.getMenuItems("comments"))]))    
-            else:
-                self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
-
-            self.foot.set_text("\nr/" + str(submission.subreddit))
-
-            self.view = "comments"
-
-            self.content[:] = urwid.SimpleListWalker([
-                urwid.AttrMap(w, None, 'reveal focus') for w in self.commentTextItems.values()
-            ])
-
-            self.currentCommentsIndex = 1
-            if len(comments) > 0:
-                # Go to top then shift down to be able see top level submission
-                self.listbox.set_focus(0)
-                self.listbox.set_focus(self.currentCommentsIndex)
+            self.__initComments("best", None)
+        elif (key == 'b' and self.view == "comments") and self.boxOpen == False:
+            self.__initComments("best", self.commentSubmissionId)
+        elif (key == 'n' and self.view == "comments") and self.boxOpen == False:
+            self.__initComments("new", self.commentSubmissionId)
+        elif (key == 't' and self.view == "comments") and self.boxOpen == False:
+            self.__initComments("top", self.commentSubmissionId)
+        elif (key == 'c' and self.view == "comments") and self.boxOpen == False:
+            self.__initComments("controversial", self.commentSubmissionId)
         elif key == 'p' and (self.view == "comments" or self.lastView == "submissions") and self.boxOpen == False:
             headerText = util.getHeader(self.reddit.getUsername())
             self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
@@ -177,7 +149,6 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
             self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
         elif key == 'a' and self.boxOpen == False:
-            main.loop.widget.original_widget = urwid.Filler(urwid.SolidFill("/"))
             self.__initAuthor(None)
         elif key == 'h' and self.view == "submissions" and self.boxOpen == False:
             self.__reinitSubmissions(self.subreddit,"hot")
@@ -191,12 +162,12 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             self.__reinitSubmissions(self.subreddit,"top")
         elif key == '/' and self.view == "submissions" and self.boxOpen == False:
             self.create_box("Subreddit")
-        elif key == 't' and self.view == "comments" and self.boxOpen == False:
+        elif key == 's' and self.view == "comments" and self.boxOpen == False:
             self.listbox.set_focus(0)
             self.listbox.set_focus(1)
         elif key == 'l' and self.boxOpen == False:
             self.create_box("User")
-        elif key == 'c' and self.view == "comments" and self.boxOpen == False:
+        elif key == 'm' and self.view == "comments" and self.boxOpen == False:
             self.create_box("Comment")
         elif key == 'r' and self.view == "comments" and self.boxOpen == False:
             self.create_box("Reply")
@@ -477,6 +448,50 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             is_reply = False
 
         return comTextItems  # return all converted comments
+
+    # Get comments
+    def __initComments(self, sorting, submissionId):
+        if submissionId == None:
+            focus_widget, localIndex = self.listbox.get_focus()
+
+            # Get the submission ID
+            submissionId = list(self.submissionTextItems.keys())[localIndex]
+            self.commentSubmissionId = submissionId
+
+        self.reddit.setSubmission(submissionId)
+        submission = self.reddit.getSubmission()
+        comments = self.reddit.getSubmissionComments(sorting)
+
+        comTextItems = util.CustomOrderedDict({})
+        submissionText = str(submission.title)
+        if len(submission.url) > 0:
+            submissionText += "\n" + submission.url
+        if len(submission.selftext) > 0:
+            submissionText += "\n----------\n" + submission.selftext
+        submissionText += "\n==========\n"
+        comTextItems.append("comment_title", main.SelectableText(submissionText))
+        self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems)
+
+        headerText = util.getHeader(self.reddit.getUsername())
+        
+        if len(comTextItems)-1 > 0:
+            self.head.set_text(('header',[headerText, ('header', util.getMenuItems("comments"))]))    
+        else:
+            self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
+
+        self.foot.set_text("\nr/" + str(submission.subreddit))
+
+        self.view = "comments"
+
+        self.content[:] = urwid.SimpleListWalker([
+            urwid.AttrMap(w, None, 'reveal focus') for w in self.commentTextItems.values()
+        ])
+
+        self.currentCommentsIndex = 1
+        if len(comments) > 0:
+            # Go to top then shift down to be able see top level submission
+            self.listbox.set_focus(0)
+            self.listbox.set_focus(self.currentCommentsIndex)
 
     # Get author
     def __initAuthor(self, author):
