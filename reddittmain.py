@@ -1,7 +1,19 @@
 #!/usr/bin/python
 import urwid
+import re
+import platform
 import rtv2util as util
 import reddittv2 as reditt
+
+class Screen(urwid.raw_display.Screen):
+
+    def write(self, data):
+        if "Microsoft" in platform.platform():
+            # replace urwid's SI/SO, which produce artifacts under WSL.
+            # https://github.com/urwid/urwid/issues/264#issuecomment-358633735
+            # Above link describes the change.
+            data = re.sub("[\x0e\x0f]", "", data)
+        super().write(data)
 
 # Make ListBox elements selectable with window resize
 class SelectableText(urwid.Text):
@@ -50,5 +62,7 @@ palette = [
 
 reddittApplication = reditt.ReddittApplication()
 
+screen = Screen()
+
 # Disable mouse input
-loop = urwid.MainLoop(reddittApplication, palette, handle_mouse=False).run()
+loop = urwid.MainLoop(reddittApplication, palette, screen=screen, handle_mouse=False).run()
