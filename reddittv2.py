@@ -214,40 +214,33 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             submissionTitle = submissionArray[0]
             submissionInfo = submissionArray[1]
             submissionInfoArray = submissionInfo.split()
-            voteIndex = len(submissionInfoArray)-5
 
             if not (u"\u2191" in submissionInfo and key == "u") and not (u"\u2193" in submissionInfo and key == "d"):
-        
-                if u"\u2191" in submissionInfo:
-                    voteIndex = submissionInfoArray.index(u"\u2191")
-                elif u"\u2193" in submissionInfo:
-                    voteIndex = submissionInfoArray.index(u"\u2193")
-
                 updatedSubmissionInfo = ""
-                submissionCore = ""
+                submissionSubreddit = ""
+                submissionAuthor = ""
                 submissionPoints = ""
-                submissionComments = ""
-                for index, submissionInfoText in enumerate(submissionInfoArray):
-                    if index >= 0 and index < len(submissionInfoArray)-4:
-                        spacer = ""
-                        if index > 0:
-                            spacer = " "
-                        if index == voteIndex:
-                            if submissionInfoText != u"\u2191" and submissionInfoText != u"\u2193":
-                                submissionCore += submissionInfoText + " "
-                            
-                            if key == "u":
-                                submissionCore += spacer + u"\u2191"
-                            elif key == "d":
-                                submissionCore += spacer + u"\u2193"
-                        else:
-                            submissionCore += spacer + submissionInfoText
-                    elif index >= len(submissionInfoArray)-4 and index < len(submissionInfoArray)-2:
-                        submissionPoints += " " + submissionInfoText
-                    else:
-                        submissionComments += " " + submissionInfoText
+                submissionCommentCount = ""
 
-                updatedSubmissionInfo = submissionCore.ljust(35) + submissionPoints.ljust(20) + submissionComments
+                for index, submissionInfoText in enumerate(submissionInfoArray):
+                    # Subreddit
+                    if index == 0 or submissionInfoText == "NSFW" or submissionInfoText == "SPOILERS":
+                        submissionSubreddit += submissionInfoText + " "
+                    # Author
+                    elif submissionInfoText.startswith('u/'):
+                        submissionAuthor = submissionInfoText
+                    # Points
+                    elif index >= len(submissionInfoArray)-4 and index <= len(submissionInfoArray)-3:
+                        submissionPoints += " " + submissionInfoText
+                    # Comment count
+                    elif index >= len(submissionInfoArray)-2 and index <= len(submissionInfoArray)-1:
+                        submissionCommentCount += " " + submissionInfoText
+
+                if key == "u":
+                    submissionSubreddit += u"\u2191"
+                elif key == "d":
+                    submissionSubreddit += u"\u2193"
+                updatedSubmissionInfo = submissionSubreddit.strip().ljust(35) + submissionAuthor.ljust(24) + submissionPoints.ljust(20) + submissionCommentCount
 
                 updatedStr = submissionTitle + "\n" + updatedSubmissionInfo + "\n"
                     

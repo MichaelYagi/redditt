@@ -193,35 +193,36 @@ def createSubmissionsList(submissions):
         title = submission.title + "\n"
         
         # Subreddit
-        pre_output = "r/" + submission.subreddit.display_name
+        subreddit = "r/" + submission.subreddit.display_name
         if submission.over_18:
-            pre_output += " NSFW"
+            subreddit += " NSFW"
         if submission.spoiler:
-            pre_output += " SPOILERS"
+            subreddit += " SPOILERS"
         if submission.likes is not None:
             if submission.likes:
-                pre_output += " " + u"\u2191"
+                subreddit += " " + u"\u2191"
             elif not submission.likes:
-                pre_output += " " + u"\u2193"
+                subreddit += " " + u"\u2193"
                 
-        footer = pre_output.ljust(35)
-
         # Author
+        author = ""
         if hasattr(submission.author, 'name'):
             author = "u/" + submission.author.name
-            footer += author.ljust(24)
 
         # Points
         pointString = " " + str(submission.score) + " point"
         if submission.score != 1:
             pointString += "s"
-        footer += pointString.ljust(20)
         
         # Comment count
-        numCommentString = " " + str(submission.num_comments) + " comment"
+        commentCount = " " + str(submission.num_comments) + " comment"
         if submission.num_comments != 1:
-            numCommentString += "s"
-        footer += numCommentString + "\n"
+            commentCount += "s"
+
+        footer = subreddit.ljust(35)
+        footer += author.ljust(24)
+        footer += pointString.ljust(20)
+        footer += commentCount + "\n"
         
         output = [title,footer]
         subItems.append(submission.id, output)
