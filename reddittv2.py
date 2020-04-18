@@ -49,157 +49,159 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
         self.frame = urwid.Frame(self.listbox, header=self.head, footer=self.foot)
 
-        self.boxOpen = False
+        self.dialogBoxOpen = False
 
         super(ReddittApplication, self).__init__(self.frame)
 
     # Keypress actions
     def keypress(self, size, key):
 
-        if key == "q" and self.boxOpen == False:
-            raise urwid.ExitMainLoop()
-        elif key == 'up' and self.boxOpen == False:
-            focus_widget, localIndex = self.listbox.get_focus()
+        if self.dialogBoxOpen == False:
+            if key == "q":
+                raise urwid.ExitMainLoop()
+            elif key == 'up':
+                focus_widget, localIndex = self.listbox.get_focus()
 
-            if self.view != "authorComment":
-                if self.view == "submissions":
-                    self.currentSubmissionIndex -= 1
-                    if self.currentSubmissionIndex < 0:
-                        self.currentSubmissionIndex = 0
+                if self.view != "authorComment":
+                    if self.view == "submissions":
+                        self.currentSubmissionIndex -= 1
+                        if self.currentSubmissionIndex < 0:
+                            self.currentSubmissionIndex = 0
 
-                    if localIndex > 0:
-                        localIndex -= 1
-                    else:
-                        localIndex = 0
-                        if self.currentSubmissionIndex > 0:
-                            localIndex = self.SUBLIST_LIMIT-1
-                            self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex-(self.SUBLIST_LIMIT-1), self.submissionItems, self.SUBLIST_LIMIT)
-                            self.content[:] = urwid.SimpleListWalker([
-                                urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
-                            ])
-                        
-                    submissionIndex = 1 if self.currentSubmissionIndex == 0 else self.currentSubmissionIndex
-                    footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int(((submissionIndex-1)+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
-                    self.foot.set_text(footerText)
-                    self.listbox.set_focus(localIndex)
-                else:
-                    if localIndex > 1:
-                        localIndex -= 1
-                        self.currentCommentsIndex -= 1
-                    self.listbox.set_focus(localIndex)
-            else:
-                if localIndex > 0:
-                    localIndex -= 1    
-                self.listbox.set_focus(localIndex)
-        elif key == 'down' and self.boxOpen == False:
-            focus_widget, localIndex = self.listbox.get_focus()
-
-            if localIndex is None:
-                localIndex = self.SUBLIST_LIMIT-1
-
-            if self.view != "authorComment":
-                if self.view == "submissions":
-                    if self.currentSubmissionIndex < len(self.submissionItems):
-                        self.currentSubmissionIndex += 1
-
-                    if localIndex < self.SUBLIST_LIMIT-1:
-                        localIndex += 1
-                    else:
-                        if self.currentSubmissionIndex < len(self.submissionItems):
+                        if localIndex > 0:
+                            localIndex -= 1
+                        else:
                             localIndex = 0
-                            self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex, self.submissionItems, self.SUBLIST_LIMIT)
-                            self.content[:] = urwid.SimpleListWalker([
-                                urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
-                            ])
-                    
-                    if self.currentSubmissionIndex < len(self.submissionItems):
-                        self.listbox.set_focus(localIndex)
-                        footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int((self.currentSubmissionIndex+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
+                            if self.currentSubmissionIndex > 0:
+                                localIndex = self.SUBLIST_LIMIT-1
+                                self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex-(self.SUBLIST_LIMIT-1), self.submissionItems, self.SUBLIST_LIMIT)
+                                self.content[:] = urwid.SimpleListWalker([
+                                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                                ])
+                            
+                        submissionIndex = 1 if self.currentSubmissionIndex == 0 else self.currentSubmissionIndex
+                        footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int(((submissionIndex-1)+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
                         self.foot.set_text(footerText)
-                else: # COMMENT
-                    if localIndex < (len(self.commentTextItems.values())-1):
-                        localIndex += 1
-                        self.currentCommentsIndex += 1
+                        self.listbox.set_focus(localIndex)
+                    else:
+                        if localIndex > 1:
+                            localIndex -= 1
+                            self.currentCommentsIndex -= 1
+                        self.listbox.set_focus(localIndex)
+                else:
+                    if localIndex > 0:
+                        localIndex -= 1    
                     self.listbox.set_focus(localIndex)
-            else:
-                if localIndex < (len(self.authorTextItems.values())-1):
-                    localIndex += 1
-                self.listbox.set_focus(localIndex)
-        elif (key == 'enter' and self.view == "submissions") or (key == 'p' and self.lastView == "comments") and self.boxOpen == False:
-            self.__initComments("best", None)
-        elif (key == 'b' and self.view == "comments") and self.boxOpen == False:
-            self.__initComments("best", self.commentSubmissionId)
-        elif (key == 'n' and self.view == "comments") and self.boxOpen == False:
-            self.__initComments("new", self.commentSubmissionId)
-        elif (key == 't' and self.view == "comments") and self.boxOpen == False:
-            self.__initComments("top", self.commentSubmissionId)
-        elif (key == 'c' and self.view == "comments") and self.boxOpen == False:
-            self.__initComments("controversial", self.commentSubmissionId)
-        elif key == 'p' and (self.view == "comments" or self.lastView == "submissions") and self.boxOpen == False:
-            headerText = util.getHeader(self.reddit.getUsername())
-            self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
+            elif key == 'down':
+                focus_widget, localIndex = self.listbox.get_focus()
 
-            footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int((self.currentSubmissionIndex+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
-            self.foot.set_text(footerText)
-            self.view = "submissions"
+                if localIndex is None:
+                    localIndex = self.SUBLIST_LIMIT-1
 
-            self.content[:] = urwid.SimpleListWalker([
-                urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
-            ])
+                if self.view != "authorComment":
+                    if self.view == "submissions":
+                        if self.currentSubmissionIndex < len(self.submissionItems):
+                            self.currentSubmissionIndex += 1
 
-            self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
-        elif key == 'a' and self.boxOpen == False:
-            self.__initAuthor(None)
-        elif key == 'h' and self.view == "submissions" and self.boxOpen == False:
-            self.__reinitSubmissions(self.subreddit,"hot")
-        elif key == 'n' and self.view == "submissions" and self.boxOpen == False:
-            self.__reinitSubmissions(self.subreddit,"new")
-        elif key == 'r' and self.view == "submissions" and self.boxOpen == False:
-            self.__reinitSubmissions(self.subreddit,"rising")
-        elif key == 'c' and self.view == "submissions" and self.boxOpen == False:  
-            self.__reinitSubmissions(self.subreddit,"controversial")  
-        elif key == 't' and self.view == "submissions" and self.boxOpen == False:
-            self.__reinitSubmissions(self.subreddit,"top")
-        elif key == '/' and self.view == "submissions" and self.boxOpen == False:
-            self.create_box("Subreddit")
-        elif key == 's' and self.view == "comments" and self.boxOpen == False:
-            self.listbox.set_focus(0)
-            self.listbox.set_focus(1)
-        elif key == 'l' and self.boxOpen == False:
-            self.create_box("User")
-        elif key == 'm' and self.view == "comments" and self.boxOpen == False:
-            self.create_box("Comment")
-        elif key == 'r' and self.view == "comments" and self.boxOpen == False:
-            self.create_box("Reply")
-        elif key == 'u' and self.view == "submissions" and self.boxOpen == False:
-            submission = self.get_submission()
-            submission.upvote()
-            self.update_list(key)
-        elif key == 'd' and self.view == "submissions" and self.boxOpen == False:
-            submission = self.get_submission()
-            submission.downvote()
-            self.update_list(key)
-        elif key == 'v' and self.view == "submissions" and self.boxOpen == False:
-            submission = self.get_submission()
-            submission.clear_vote()
-            self.update_list(key)
-        elif key == 'u' and self.view == "comments" and self.boxOpen == False:
-            comment = self.get_comment()
-            comment.upvote()
-            self.update_list(key)
-        elif key == 'd' and self.view == "comments" and self.boxOpen == False:
-            comment = self.get_comment()
-            comment.downvote()
-            self.update_list(key)
-        elif key == 'v' and self.view == "comments" and self.boxOpen == False:
-            comment = self.get_comment()
-            comment.clear_vote()
-            self.update_list(key)
-        elif key != 'enter' and key != 'esc' and self.boxOpen == True:
-            return super(ReddittApplication, self).keypress(size, key)
-        elif key == 'esc' and self.boxOpen == True:
-            self.original_widget = self.original_widget[0]
-            self.boxOpen = False
+                        if localIndex < self.SUBLIST_LIMIT-1:
+                            localIndex += 1
+                        else:
+                            if self.currentSubmissionIndex < len(self.submissionItems):
+                                localIndex = 0
+                                self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex, self.submissionItems, self.SUBLIST_LIMIT)
+                                self.content[:] = urwid.SimpleListWalker([
+                                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                                ])
+                        
+                        if self.currentSubmissionIndex < len(self.submissionItems):
+                            self.listbox.set_focus(localIndex)
+                            footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int((self.currentSubmissionIndex+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
+                            self.foot.set_text(footerText)
+                    else: # COMMENT
+                        if localIndex < (len(self.commentTextItems.values())-1):
+                            localIndex += 1
+                            self.currentCommentsIndex += 1
+                        self.listbox.set_focus(localIndex)
+                else:
+                    if localIndex < (len(self.authorTextItems.values())-1):
+                        localIndex += 1
+                    self.listbox.set_focus(localIndex)
+            elif (key == 'enter' and self.view == "submissions") or (key == 'p' and self.lastView == "comments"):
+                self.__initComments("best", None)
+            elif (key == 'b' and self.view == "comments"):
+                self.__initComments("best", self.commentSubmissionId)
+            elif (key == 'n' and self.view == "comments"):
+                self.__initComments("new", self.commentSubmissionId)
+            elif (key == 't' and self.view == "comments"):
+                self.__initComments("top", self.commentSubmissionId)
+            elif (key == 'c' and self.view == "comments"):
+                self.__initComments("controversial", self.commentSubmissionId)
+            elif key == 'p' and (self.view == "comments" or self.lastView == "submissions"):
+                headerText = util.getHeader(self.reddit.getUsername())
+                self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
+
+                footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int((self.currentSubmissionIndex+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
+                self.foot.set_text(footerText)
+                self.view = "submissions"
+
+                self.content[:] = urwid.SimpleListWalker([
+                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                ])
+
+                self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
+            elif key == 'a':
+                self.__initAuthor(None)
+            elif key == 'h' and self.view == "submissions":
+                self.__reinitSubmissions(self.subreddit,"hot")
+            elif key == 'n' and self.view == "submissions":
+                self.__reinitSubmissions(self.subreddit,"new")
+            elif key == 'r' and self.view == "submissions":
+                self.__reinitSubmissions(self.subreddit,"rising")
+            elif key == 'c' and self.view == "submissions":  
+                self.__reinitSubmissions(self.subreddit,"controversial")  
+            elif key == 't' and self.view == "submissions":
+                self.__reinitSubmissions(self.subreddit,"top")
+            elif key == '/' and self.view == "submissions":
+                self.create_box("Subreddit")
+            elif key == 's' and self.view == "comments":
+                self.listbox.set_focus(0)
+                self.listbox.set_focus(1)
+            elif key == 'l':
+                self.create_box("User")
+            elif key == 'm' and self.view == "comments":
+                self.create_box("Comment")
+            elif key == 'r' and self.view == "comments":
+                self.create_box("Reply")
+            elif key == 'u' and self.view == "submissions":
+                submission = self.get_submission()
+                submission.upvote()
+                self.update_list(key)
+            elif key == 'd' and self.view == "submissions":
+                submission = self.get_submission()
+                submission.downvote()
+                self.update_list(key)
+            elif key == 'v' and self.view == "submissions":
+                submission = self.get_submission()
+                submission.clear_vote()
+                self.update_list(key)
+            elif key == 'u' and self.view == "comments":
+                comment = self.get_comment()
+                comment.upvote()
+                self.update_list(key)
+            elif key == 'd' and self.view == "comments":
+                comment = self.get_comment()
+                comment.downvote()
+                self.update_list(key)
+            elif key == 'v' and self.view == "comments":
+                comment = self.get_comment()
+                comment.clear_vote()
+                self.update_list(key)
+        else:
+            if key != 'enter' and key != 'esc':
+                return super(ReddittApplication, self).keypress(size, key)
+            elif key == 'esc':
+                self.original_widget = self.original_widget[0]
+                self.dialogBoxOpen = False
 
     # Update the list when voting
     def update_list(self, key):
@@ -365,12 +367,12 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 dialogComponents.set_error("Error getting user")
 
         self.original_widget = self.original_widget[0]
-        self.boxOpen = False
+        self.dialogBoxOpen = False
 
     # Exit the dialog window
     def exit_box(self, box):
         self.original_widget = self.original_widget[0]
-        self.boxOpen = False
+        self.dialogBoxOpen = False
 
     # Open the dialog window
     def open_box(self, box):
@@ -384,7 +386,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             top=2,
             bottom=2
         )
-        self.boxOpen = True
+        self.dialogBoxOpen = True
 
     # Create the dialog window
     def create_box(self, caption):
