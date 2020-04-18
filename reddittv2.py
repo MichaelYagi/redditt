@@ -154,15 +154,15 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             elif key == 'a':
                 self.__initAuthor(None)
             elif key == 'h' and self.view == "submissions":
-                self.__reinitSubmissions(self.subreddit,"hot")
+                self.__initSubmissions(self.subreddit,"hot")
             elif key == 'n' and self.view == "submissions":
-                self.__reinitSubmissions(self.subreddit,"new")
+                self.__initSubmissions(self.subreddit,"new")
             elif key == 'r' and self.view == "submissions":
-                self.__reinitSubmissions(self.subreddit,"rising")
+                self.__initSubmissions(self.subreddit,"rising")
             elif key == 'c' and self.view == "submissions":  
-                self.__reinitSubmissions(self.subreddit,"controversial")  
+                self.__initSubmissions(self.subreddit,"controversial")  
             elif key == 't' and self.view == "submissions":
-                self.__reinitSubmissions(self.subreddit,"top")
+                self.__initSubmissions(self.subreddit,"top")
             elif key == '/' and self.view == "submissions":
                 self.create_box("Subreddit")
             elif key == 's' and self.view == "comments":
@@ -177,27 +177,27 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             elif key == 'u' and self.view == "submissions":
                 submission = self.get_submission()
                 submission.upvote()
-                self.update_list(key)
+                self.update_list_with_vote(key)
             elif key == 'd' and self.view == "submissions":
                 submission = self.get_submission()
                 submission.downvote()
-                self.update_list(key)
+                self.update_list_with_vote(key)
             elif key == 'v' and self.view == "submissions":
                 submission = self.get_submission()
                 submission.clear_vote()
-                self.update_list(key)
+                self.update_list_with_vote(key)
             elif key == 'u' and self.view == "comments":
                 comment = self.get_comment()
                 comment.upvote()
-                self.update_list(key)
+                self.update_list_with_vote(key)
             elif key == 'd' and self.view == "comments":
                 comment = self.get_comment()
                 comment.downvote()
-                self.update_list(key)
+                self.update_list_with_vote(key)
             elif key == 'v' and self.view == "comments":
                 comment = self.get_comment()
                 comment.clear_vote()
-                self.update_list(key)
+                self.update_list_with_vote(key)
         else:
             if key != 'enter' and key != 'esc':
                 return super(ReddittApplication, self).keypress(size, key)
@@ -206,7 +206,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 self.dialogBoxOpen = False
 
     # Update the list when voting
-    def update_list(self, key):
+    def update_list_with_vote(self, key):
         focus_widget, localIndex = self.listbox.get_focus()
         updatedStr = ""
 
@@ -354,7 +354,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             try:
                 subreddit = list(form_dictionary.values())[0]
 
-                self.__reinitSubmissions(subreddit,"hot")
+                self.__initSubmissions(subreddit,"hot")
             except:
                 dialogComponents.set_error("Error getting subreddit")
         elif dialogComponents.get_title() == "User":
@@ -546,7 +546,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.view = "authorComment"
 
     # Reloads the content body with subreddit by type
-    def __reinitSubmissions(self, subreddit, type):
+    def __initSubmissions(self, subreddit, type):
         exists = True
         try:
             self.reddit.getRedditInstance().subreddits.search_by_name(subreddit, exact=True)
