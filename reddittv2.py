@@ -351,12 +351,19 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             except:
                 dialogComponents.set_error("Error submitting comment reply")
         elif dialogComponents.get_title() == "Subreddit":
+            exceptionRaised = False
             try:
                 subreddit = list(form_dictionary.values())[0]
 
                 self.__initSubmissions(subreddit,"hot")
             except:
                 dialogComponents.set_error("Error getting subreddit")
+                exceptionRaised = True
+
+            if exceptionRaised == False:
+                self.dialogBoxOpen = False
+                self.dialogComponents = None
+                self.original_widget = self.original_widget[0]
         elif dialogComponents.get_title() == "User":
             exists = True
             try:
@@ -575,10 +582,6 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
             self.content[:] = urwid.SimpleListWalker([
                 urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
-            ])
-
-            self.dialogBoxOpen = False
-            self.original_widget = self.original_widget[0]
-            self.dialogComponents = None
+            ])    
 
             self.listbox.set_focus(0)
