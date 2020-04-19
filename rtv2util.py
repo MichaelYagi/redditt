@@ -124,8 +124,10 @@ def getMenuItems(viewType):
             ('menu option', '[m]'), 'ment ',
             ('menu option', '[r]'), 'eply ',
             ('menu option', '[a]'), 'uthor\n',
-            ('menu option', '[s]'), 'croll top ',
-            ('menu option', '[p]'), 'revious ',
+            ('menu option', '[s]'), 'croll top prev',
+            ('menu option', '[i]'), 'ous ne',
+            ('menu option', '[x]'), 't ',
+            ('menu option', '[p]'), 'revious page ',
             ('menu option', '[l]'), 'ookup user ',
             ('menu option', '[q]'), 'uit\n\n',
         ]
@@ -145,7 +147,7 @@ def getMenuItems(viewType):
             ('menu option', '[q]'), 'uit\n\n'
         ]
     elif viewType == "authorComments":
-        return [('menu option', '[p]'), 'revious ',
+        return [('menu option', '[p]'), 'revious page ',
             ('menu option', '[q]'), 'uit\n\n'
         ]
 
@@ -227,3 +229,16 @@ def createSubmissionsList(submissions):
         subItems.append(submission.id, output)
 
     return subItems
+
+def getPalette():
+    # Colour palette used for various attributes
+    return [
+        ('header', 'dark green', 'black'),
+        ('reveal focus', 'yellow', 'default', 'standout'),
+        ('data body', 'dark green', 'default'),
+        ('data info', 'light gray', 'default', 'default'),
+        ('data info bold', 'light cyan', 'default', 'bold'),
+        ('boxMessage', 'dark cyan', 'black'),
+        ('boxError', 'dark red', 'black'),
+        ('menu option', 'light green', 'black', 'standout')
+    ]

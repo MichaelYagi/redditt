@@ -198,12 +198,47 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 comment = self.get_comment()
                 comment.clear_vote()
                 self.update_list_with_vote(key)
+            elif key == 'i' and self.view == "comments":
+                # Previous parent comment
+                self.find_comment_parent("previous")
+            elif key == 'x' and self.view == "comments":
+                # Next parent comment
+                self.find_comment_parent("next")
         else:
             if key != 'enter' and key != 'esc':
                 return super(ReddittApplication, self).keypress(size, key)
             elif key == 'esc':
                 self.original_widget = self.original_widget[0]
                 self.dialogBoxOpen = False
+
+    def find_comment_parent(self, type):
+        parentFound = False
+
+        commentsLength = len(self.commentTextItems)
+
+        if commentsLength == 1:
+            parentFound = True
+        else:
+            while parentFound == False:
+                if type == "previous" and self.currentCommentsIndex > 1:
+                    self.currentCommentsIndex = self.currentCommentsIndex - 1
+                # next
+                elif type == "next" and self.currentCommentsIndex < commentsLength-1:
+                    self.currentCommentsIndex = self.currentCommentsIndex + 1
+                    
+                commentKey = list(self.commentTextItems.keys())[self.currentCommentsIndex]
+                
+                if commentKey != "comment_title":
+                    commentKeyArray = commentKey.split("|")
+                    
+                    depth = commentKeyArray[1]                
+                    if int(depth) == 0:
+                        parentFound = True
+
+                if self.currentCommentsIndex == 1:
+                    parentFound = True
+
+            self.listbox.set_focus(self.currentCommentsIndex)
 
     # Update the list when voting
     def update_list_with_vote(self, key):
@@ -426,49 +461,54 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.open_box(box)
 
     # Recursively collect nested comments used for display, keyed by comment ID
-    def __commentsToDictionary(self, comments, is_reply, depth, comTextItems):
-        item = ""
+    def __commentsToDictionary(self, comments, is_reply, depth, comTextItems, author):
 
         #from praw.models import MoreComments
         comments.replace_more(limit=0)
-        for comment in comments:  # iterate over comments
-            head = ""
-            offset = 0
-
-            if is_reply:
-                offset = 2+depth
-            else:
-                offset = depth
-
-            head += "u/" + str(comment.author)
-
-            if comment.likes is not None:
-                if comment.likes:
-                    head += " " + u"\u2191"
-                elif not comment.likes:
-                    head += " " + u"\u2193"
-
-            head += " " + str(comment.score) + " point"
-            if comment.score != 1:
-                head +=  "s"
-
-            if comment.gilded > 0:
-                head += " " + str(comment.gilded) + " gilded" 
-            
-            body = "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
-
-            output = [('data info', head), body]
-            content = main.SelectableText(output)
-            comment_with_padding = urwid.Padding(content, 'left', 'pack', None, offset, 0)
-            comTextItems.append(comment.id+"|"+str(offset), comment_with_padding)
-
-            if len(comment.replies) > 0:
-                depth = depth + 1
-                comTextItems = self.__commentsToDictionary(comment.replies, True, depth, comTextItems)  # convert replies using the same function
-
-            is_reply = False
+        for comment in comments:  # iterate over comments            
+            comTextItems = self.process_comment(comment, author, comTextItems)
 
         return comTextItems  # return all converted comments
+
+    def process_comment(self, comment, author, comTextItems, depth=0):
+        head = ""
+        offset = depth
+
+        # head += " testzzz: " + str(offset) + " "
+
+        authorText = ""
+        if offset == 0:
+            authorText += ":"
+        authorText += "u/" + str(comment.author)
+        attribute = 'data info'
+        if author == str(comment.author):
+            attribute = 'data info bold'
+        authorName = (attribute, authorText)            
+
+        if comment.likes is not None:
+            if comment.likes:
+                head += " " + u"\u2191"
+            elif not comment.likes:
+                head += " " + u"\u2193"
+
+        head += " " + str(comment.score) + " point"
+        if comment.score != 1:
+            head +=  "s"
+
+        if comment.gilded > 0:
+            head += " " + str(comment.gilded) + " gilded" 
+        
+        body = "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
+
+        output = [authorName, ('data info', head), body]
+        content = main.SelectableText(output)
+        comment_with_padding = urwid.Padding(content, 'left', 'pack', None, offset, 0)
+        comTextItems.append(comment.id+"|"+str(offset), comment_with_padding)
+
+        for reply in comment.replies:
+            comTextItems = self.process_comment(reply, author, comTextItems, depth + 1)
+
+        return comTextItems
 
     # Get comments
     def __initComments(self, sorting, submissionId):
@@ -484,14 +524,16 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         comments = self.reddit.getSubmissionComments(sorting)
 
         comTextItems = util.CustomOrderedDict({})
-        submissionText = str(submission.title)
+        
+        submissionText = "u/" + str(submission.author.name)
+        submissionText += "\n" + str(submission.title)
         if len(submission.url) > 0:
             submissionText += "\n" + submission.url
         if len(submission.selftext) > 0:
             submissionText += "\n----------\n" + submission.selftext
         submissionText += "\n==========\n"
         comTextItems.append("comment_title", main.SelectableText(submissionText))
-        self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems)
+        self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems, str(submission.author.name))
 
         headerText = util.getHeader(self.reddit.getUsername())
         

@@ -49,20 +49,9 @@ def getAuthorCommentTextList(currentIndex, commentItems, sublistLimit):
 
     return textList
 
-# Colour palette used for various attributes
-palette = [
-    ('header', 'dark green', 'black'),
-    ('reveal focus', 'yellow', 'default', 'standout'),
-    ('data body', 'dark green', 'default'),
-    ('data info', 'light gray', 'default', 'bold'),
-    ('boxMessage', 'dark cyan', 'black'),
-    ('boxError', 'dark red', 'black'),
-    ('menu option', 'light green', 'black', 'standout')
-]
-
 reddittApplication = reditt.ReddittApplication()
 
 screen = Screen()
 
 # Disable mouse input
-loop = urwid.MainLoop(reddittApplication, palette, screen=screen, handle_mouse=False).run()
+loop = urwid.MainLoop(reddittApplication, util.getPalette(), screen=screen, handle_mouse=False).run()
