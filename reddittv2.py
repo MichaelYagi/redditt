@@ -432,7 +432,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         #from praw.models import MoreComments
         comments.replace_more(limit=0)
         for comment in comments:  # iterate over comments
-            item = ""
+            head = ""
             offset = 0
 
             if is_reply:
@@ -440,23 +440,25 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             else:
                 offset = depth
 
-            item += "u/" + str(comment.author)
+            head += "u/" + str(comment.author)
 
             if comment.likes is not None:
                 if comment.likes:
-                    item += " " + u"\u2191"
+                    head += " " + u"\u2191"
                 elif not comment.likes:
-                    item += " " + u"\u2193"
+                    head += " " + u"\u2193"
 
-            item += " " + str(comment.score) + " point"
+            head += " " + str(comment.score) + " point"
             if comment.score != 1:
-                item +=  "s"
+                head +=  "s"
 
             if comment.gilded > 0:
-                item += " " + str(comment.gilded) + " gilded" 
-            item += "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
+                head += " " + str(comment.gilded) + " gilded" 
+            
+            body = "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
 
-            content = main.SelectableText(item)
+            output = [('data info', head), body]
+            content = main.SelectableText(output)
             comment_with_padding = urwid.Padding(content, 'left', 'pack', None, offset, 0)
             comTextItems.append(comment.id+"|"+str(offset), comment_with_padding)
 

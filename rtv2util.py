@@ -145,7 +145,9 @@ def getMenuItems(viewType):
             ('menu option', '[q]'), 'uit\n\n'
         ]
     elif viewType == "authorComments":
-        return [('menu option', '[p]'), 'revious \n\n']
+        return [('menu option', '[p]'), 'revious ',
+            ('menu option', '[q]'), 'uit\n\n'
+        ]
 
 # Get the banner text
 def getHeader(username):
@@ -176,11 +178,7 @@ def createAuthorCommentList(author, submissionListLimit):
         # Subreddit
         subreddit = comment.subreddit.display_name
 
-        output = body + "\n"
-        output += points.ljust(20)
-        output += "r/" + subreddit.ljust(20)
-        output += commentTime + "\n"
-
+        output =  [body + "\n",('data info', points.ljust(20) + "r/" + subreddit.ljust(20) + commentTime + "\n")]
         subItems.append(comment.id, output)
 
     return subItems
