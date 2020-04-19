@@ -224,7 +224,8 @@ def createSubmissionsList(submissions):
         footer += pointString.ljust(20)
         footer += commentCount + "\n"
         
-        output = [title,footer]
+        # highlighted focus color not fully transparent!!
+        output = [title,('data info', footer)]
         subItems.append(submission.id, output)
 
     return subItems

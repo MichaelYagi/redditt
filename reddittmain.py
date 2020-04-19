@@ -52,8 +52,8 @@ def getAuthorCommentTextList(currentIndex, commentItems, sublistLimit):
 # Colour palette used for various attributes
 palette = [
     ('header', 'dark green', 'black'),
-    ('reveal focus', 'white', 'dark blue', 'standout'),
-    ('data body', 'white', 'default'),
+    ('reveal focus', 'yellow', 'default', 'standout'),
+    ('data body', 'dark green', 'default'),
     ('data info', 'light gray', 'default', 'bold'),
     ('boxMessage', 'dark cyan', 'black'),
     ('boxError', 'dark red', 'black'),
