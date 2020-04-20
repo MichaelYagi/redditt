@@ -251,6 +251,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 if self.currentCommentsIndex == 1:
                     parentFound = True
 
+            headText = util.getHeader(self.reddit.getUsername())
+            self.head.set_text(('header',[headText, ('header', (util.getMenuItems("comments")))]))
+            self.head.set_wrap_mode('clip')
+
             self.listbox.set_focus(self.currentCommentsIndex)
 
     # Update the list when voting
