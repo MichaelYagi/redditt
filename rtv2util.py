@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import urwid
 import praw
+import reddittmain as main
 from collections import OrderedDict
 from datetime import datetime
 
@@ -111,71 +112,6 @@ class Redditt():
 def datetime_from_utc_to_local(utc_datetime):
     return datetime.utcfromtimestamp(int(utc_datetime)).strftime('%Y-%m-%d %H:%M:%S')
 
-# Get menu items for header
-def getMenuItems(viewType):
-    if viewType == "comments":
-        return [
-            ('menu option', '[b]'),'est ',
-            ('menu option', '[n]'), 'ew ',
-            ('menu option', '[c]'), 'ontroversial ',
-            ('menu option', '[t]'), 'op\n',
-            ('menu option', '[u]'), 'pvote ',
-            ('menu option', '[d]'), 'ownvote clear',
-            ('menu option', '[v]'), 'ote co',
-            ('menu option', '[m]'), 'ment ',
-            ('menu option', '[r]'), 'eply ',
-            ('menu option', '[a]'), 'uthor\n',
-            ('menu option', '[s]'), 'croll top prev',
-            ('menu option', '[i]'), 'ous ne',
-            ('menu option', '[x]'), 't ',
-            ('menu option', '[p]'), 'revious page ',
-            ('menu option', '[l]'), 'ookup user ',
-            ('menu option', '[q]'), 'uit\n\n',
-        ]
-    elif viewType == "commentSubmission":
-        return [
-            ('menu option', '[b]'),'est ',
-            ('menu option', '[n]'), 'ew ',
-            ('menu option', '[c]'), 'ontroversial ',
-            ('menu option', '[t]'), 'op\n',
-            ('menu option', '[a]'), 'uthor\nne',
-            ('menu option', '[x]'), 't ',
-            ('menu option', '[p]'), 'revious page ',
-            ('menu option', '[l]'), 'ookup user ',
-            ('menu option', '[q]'), 'uit\n\n',
-        ]
-    elif viewType == "submission":
-        return [
-            ('menu option', '[h]'),'ot ',
-            ('menu option', '[r]'), 'ising ',
-            ('menu option', '[n]'), 'ew ',
-            ('menu option', '[c]'), 'ontroversial ',
-            ('menu option', '[t]'), 'op\n',
-            ('menu option', '[u]'), 'pvote ',
-            ('menu option', '[d]'), 'ownvote clear',
-            ('menu option', '[v]'), 'ote ',
-            ('menu option', '[a]'), 'uthor\n',
-            ('menu option', '[/]'), 'subreddit ',
-            ('menu option', '[l]'), 'ookup user ',
-            ('menu option', '[enter]'), 'comments ',
-            ('menu option', '[q]'), 'uit\n\n'
-        ]
-    elif viewType == "authorComments":
-        return [
-            ('menu option', '[p]'), 'revious page ',
-            ('menu option', '[q]'), 'uit\n\n'
-        ]
-
-# Get the banner text
-def getHeader(username):
-    userNameLine = "***  u/" + username
-    headerText = "**********************************************\n"
-    headerText += "***  Reddit for terminal                   ***\n"
-    headerText += userNameLine.ljust(43) + "***\n"
-    headerText += "**********************************************\n"
-    
-    return headerText
-
 # Creates a list of author comment texts used for display, keyed by submission ID
 def createAuthorCommentList(author, submissionListLimit):
     subItems = CustomOrderedDict({})
@@ -244,6 +180,71 @@ def createSubmissionsList(submissions):
         subItems.append(submission.id, output)
 
     return subItems
+
+# Get menu items for header
+def getMenuItems(viewType):
+    if viewType == "comments":
+        return [
+            ('menu option', '[b]'),'est ',
+            ('menu option', '[n]'), 'ew ',
+            ('menu option', '[c]'), 'ontroversial ',
+            ('menu option', '[t]'), 'op\n',
+            ('menu option', '[u]'), 'pvote ',
+            ('menu option', '[d]'), 'ownvote clear',
+            ('menu option', '[v]'), 'ote co',
+            ('menu option', '[m]'), 'ment ',
+            ('menu option', '[r]'), 'eply ',
+            ('menu option', '[a]'), 'uthor\n',
+            ('menu option', '[s]'), 'croll top prev',
+            ('menu option', '[i]'), 'ous ne',
+            ('menu option', '[x]'), 't ',
+            ('menu option', '[p]'), 'revious page ',
+            ('menu option', '[l]'), 'ookup user ',
+            ('menu option', '[q]'), 'uit\n\n',
+        ]
+    elif viewType == "commentSubmission":
+        return [
+            ('menu option', '[b]'),'est ',
+            ('menu option', '[n]'), 'ew ',
+            ('menu option', '[c]'), 'ontroversial ',
+            ('menu option', '[t]'), 'op\n',
+            ('menu option', '[a]'), 'uthor\nne',
+            ('menu option', '[x]'), 't ',
+            ('menu option', '[p]'), 'revious page ',
+            ('menu option', '[l]'), 'ookup user ',
+            ('menu option', '[q]'), 'uit\n\n',
+        ]
+    elif viewType == "submission":
+        return [
+            ('menu option', '[h]'),'ot ',
+            ('menu option', '[r]'), 'ising ',
+            ('menu option', '[n]'), 'ew ',
+            ('menu option', '[c]'), 'ontroversial ',
+            ('menu option', '[t]'), 'op\n',
+            ('menu option', '[u]'), 'pvote ',
+            ('menu option', '[d]'), 'ownvote clear',
+            ('menu option', '[v]'), 'ote ',
+            ('menu option', '[a]'), 'uthor\n',
+            ('menu option', '[/]'), 'subreddit ',
+            ('menu option', '[l]'), 'ookup user ',
+            ('menu option', '[enter]'), 'comments ',
+            ('menu option', '[q]'), 'uit\n\n'
+        ]
+    elif viewType == "authorComments":
+        return [
+            ('menu option', '[p]'), 'revious page ',
+            ('menu option', '[q]'), 'uit\n\n'
+        ]
+
+# Get the banner text
+def getHeader(username):
+    userNameLine = "***  u/" + username
+    headerText = "**********************************************\n"
+    headerText += "***  Reddit for terminal                   ***\n"
+    headerText += userNameLine.ljust(43) + "***\n"
+    headerText += "**********************************************\n"
+    
+    return headerText
 
 def getPalette():
     # Colour palette used for various attributes
