@@ -195,10 +195,10 @@ def getMenuItems(viewType):
             ('menu option', '[m]'), 'ment ',
             ('menu option', '[r]'), 'eply ',
             ('menu option', '[a]'), 'uthor\n',
-            ('menu option', '[s]'), 'croll top prev',
-            ('menu option', '[i]'), 'ous ne',
-            ('menu option', '[x]'), 't ',
-            ('menu option', '[p]'), 'revious page ',
+            ('menu option', '[s]'), 'croll top ',
+            ('menu option', '[p]'), 'revious ne',
+            ('menu option', '[x]'), 't bac',
+            ('menu option', '[k]'), ' ',
             ('menu option', '[l]'), 'ookup user ',
             ('menu option', '[q]'), 'uit\n\n',
         ]
@@ -209,8 +209,8 @@ def getMenuItems(viewType):
             ('menu option', '[c]'), 'ontroversial ',
             ('menu option', '[t]'), 'op\n',
             ('menu option', '[a]'), 'uthor\nne',
-            ('menu option', '[x]'), 't ',
-            ('menu option', '[p]'), 'revious page ',
+            ('menu option', '[x]'), 't bac',
+            ('menu option', '[k]'), ' ',
             ('menu option', '[l]'), 'ookup user ',
             ('menu option', '[q]'), 'uit\n\n',
         ]
@@ -232,7 +232,8 @@ def getMenuItems(viewType):
         ]
     elif viewType == "authorComments":
         return [
-            ('menu option', '[p]'), 'revious page ',
+            'bac',
+            ('menu option', '[k]'), ' ',
             ('menu option', '[q]'), 'uit\n\n'
         ]
 

@@ -138,7 +138,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                     self.listbox.set_focus(localIndex)
             elif (key == 'enter' and self.view == "submissions"):
                 self.__initComments("best", None)
-            elif key == 'p' and (self.view == "comments" or self.lastView == "submissions"):
+            elif key == 'k' and (self.view == "comments" or self.lastView == "submissions"):
                 headerText = util.getHeader(self.reddit.getUsername())
                 self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
 
@@ -151,7 +151,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 ])
 
                 self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
-            elif (key == 'p' and self.lastView == "comments"):
+            elif (key == 'k' and self.lastView == "comments"):
                 self.__initComments("best", self.commentSubmissionId)
             elif (key == 'b' and self.view == "comments"):
                 self.__initComments("best", self.commentSubmissionId)
@@ -211,7 +211,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 comment = self.get_comment()
                 comment.clear_vote()
                 self.update_list_with_vote(key)
-            elif key == 'i' and self.view == "comments":
+            elif key == 'p' and self.view == "comments":
                 # Previous parent comment
                 self.find_comment_parent("previous")
             elif key == 'x' and self.view == "comments":
@@ -491,7 +491,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         head = ""
         offset = depth
 
-        # head += " testzzz: " + str(offset) + " "
+        # Test offset
+        # head += " offset: " + str(offset) + " "
 
         authorText = ""
         if offset == 0:
