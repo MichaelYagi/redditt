@@ -114,7 +114,8 @@ def datetime_from_utc_to_local(utc_datetime):
 # Get menu items for header
 def getMenuItems(viewType):
     if viewType == "comments":
-        return [('menu option', '[b]'),'est ',
+        return [
+            ('menu option', '[b]'),'est ',
             ('menu option', '[n]'), 'ew ',
             ('menu option', '[c]'), 'ontroversial ',
             ('menu option', '[t]'), 'op\n',
@@ -131,8 +132,21 @@ def getMenuItems(viewType):
             ('menu option', '[l]'), 'ookup user ',
             ('menu option', '[q]'), 'uit\n\n',
         ]
+    elif viewType == "commentSubmission":
+        return [
+            ('menu option', '[b]'),'est ',
+            ('menu option', '[n]'), 'ew ',
+            ('menu option', '[c]'), 'ontroversial ',
+            ('menu option', '[t]'), 'op\n',
+            ('menu option', '[a]'), 'uthor\nne',
+            ('menu option', '[x]'), 't ',
+            ('menu option', '[p]'), 'revious page ',
+            ('menu option', '[l]'), 'ookup user ',
+            ('menu option', '[q]'), 'uit\n\n',
+        ]
     elif viewType == "submission":
-        return [('menu option', '[h]'),'ot ',
+        return [
+            ('menu option', '[h]'),'ot ',
             ('menu option', '[r]'), 'ising ',
             ('menu option', '[n]'), 'ew ',
             ('menu option', '[c]'), 'ontroversial ',
@@ -147,7 +161,8 @@ def getMenuItems(viewType):
             ('menu option', '[q]'), 'uit\n\n'
         ]
     elif viewType == "authorComments":
-        return [('menu option', '[p]'), 'revious page ',
+        return [
+            ('menu option', '[p]'), 'revious page ',
             ('menu option', '[q]'), 'uit\n\n'
         ]
 

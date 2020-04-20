@@ -83,10 +83,16 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                         footerText = "\nr/"+self.subreddit+" - "+self.subreddit_type+"\nPage "+str(int(((submissionIndex-1)+self.SUBLIST_LIMIT)/(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT)))+"/"+str(int(self.SUBMISSION_LIST_LIMIT/self.SUBLIST_LIMIT))
                         self.foot.set_text(footerText)
                         self.listbox.set_focus(localIndex)
+                    # Comments
                     else:
-                        if localIndex > 1:
+                        if localIndex > 0:
                             localIndex -= 1
                             self.currentCommentsIndex -= 1
+                            if localIndex == 0:
+                                headText = util.getHeader(self.reddit.getUsername())
+                                self.head.set_text(('header',[headText, ('header', (util.getMenuItems("commentSubmission")))]))
+                                self.head.set_wrap_mode('clip')
+
                         self.listbox.set_focus(localIndex)
                 else:
                     if localIndex > 0:
@@ -121,6 +127,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                         if localIndex < (len(self.commentTextItems.values())-1):
                             localIndex += 1
                             self.currentCommentsIndex += 1
+                        if localIndex > 0:
+                            headText = util.getHeader(self.reddit.getUsername())
+                            self.head.set_text(('header',[headText, ('header', (util.getMenuItems("comments")))]))
+                            self.head.set_wrap_mode('clip')
                         self.listbox.set_focus(localIndex)
                 else:
                     if localIndex < (len(self.authorTextItems.values())-1):
@@ -151,7 +161,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 self.__initComments("top", self.commentSubmissionId)
             elif (key == 'c' and self.view == "comments"):
                 self.__initComments("controversial", self.commentSubmissionId)
-            elif key == 'a':
+            elif key == 'a' and (self.view == "comments" or self.view == "submissions"):
                 self.__initAuthor(None)
             elif key == 'h' and self.view == "submissions":
                 self.__initSubmissions(self.subreddit,"hot")
@@ -166,13 +176,16 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             elif key == '/' and self.view == "submissions":
                 self.create_box("Subreddit")
             elif key == 's' and self.view == "comments":
-                self.listbox.set_focus(0)
-                self.listbox.set_focus(1)
+                self.currentCommentsIndex = 0
+                self.listbox.set_focus(self.currentCommentsIndex)
+                headText = util.getHeader(self.reddit.getUsername())
+                self.head.set_text(('header',[headText, ('header', (util.getMenuItems("commentSubmission")))]))
+                self.head.set_wrap_mode('clip')
             elif key == 'l':
                 self.create_box("User")
-            elif key == 'm' and self.view == "comments":
+            elif key == 'm' and self.view == "comments" and self.currentCommentsIndex > 0:
                 self.create_box("Comment")
-            elif key == 'r' and self.view == "comments":
+            elif key == 'r' and self.view == "comments" and self.currentCommentsIndex > 0:
                 self.create_box("Reply")
             elif key == 'u' and self.view == "submissions":
                 submission = self.get_submission()
@@ -186,15 +199,15 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 submission = self.get_submission()
                 submission.clear_vote()
                 self.update_list_with_vote(key)
-            elif key == 'u' and self.view == "comments":
+            elif key == 'u' and self.view == "comments" and self.currentCommentsIndex > 0:
                 comment = self.get_comment()
                 comment.upvote()
                 self.update_list_with_vote(key)
-            elif key == 'd' and self.view == "comments":
+            elif key == 'd' and self.view == "comments" and self.currentCommentsIndex > 0:
                 comment = self.get_comment()
                 comment.downvote()
                 self.update_list_with_vote(key)
-            elif key == 'v' and self.view == "comments":
+            elif key == 'v' and self.view == "comments" and self.currentCommentsIndex > 0:
                 comment = self.get_comment()
                 comment.clear_vote()
                 self.update_list_with_vote(key)
@@ -228,7 +241,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                     
                 commentKey = list(self.commentTextItems.keys())[self.currentCommentsIndex]
                 
-                if commentKey != "comment_title":
+                if "comment_title" not in commentKey:
                     commentKeyArray = commentKey.split("|")
                     
                     depth = commentKeyArray[1]                
@@ -532,13 +545,13 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         if len(submission.selftext) > 0:
             submissionText += "\n----------\n" + submission.selftext
         submissionText += "\n==========\n"
-        comTextItems.append("comment_title", main.SelectableText(submissionText))
+        comTextItems.append(str(submissionId) + "|comment_title", main.SelectableText(submissionText))
         self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems, str(submission.author.name))
 
         headerText = util.getHeader(self.reddit.getUsername())
         
         if len(comTextItems)-1 > 0:
-            self.head.set_text(('header',[headerText, ('header', util.getMenuItems("comments"))]))    
+            self.head.set_text(('header',[headerText, ('header', util.getMenuItems("commentSubmission"))]))    
         else:
             self.head.set_text(('header',[headerText, ('header', util.getMenuItems("submission"))]))    
 
@@ -550,26 +563,31 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             urwid.AttrMap(w, None, 'reveal focus') for w in self.commentTextItems.values()
         ])
 
-        self.currentCommentsIndex = 1
+        self.currentCommentsIndex = 0
         if len(comments) > 0:
             # Go to top then shift down to be able see top level submission
-            self.listbox.set_focus(0)
             self.listbox.set_focus(self.currentCommentsIndex)
 
     # Get author
     def __initAuthor(self, author):
         self.lastView = self.view
         if author == None:
-            if self.view == "comments":
+            if self.view == "comments" and self.currentCommentsIndex > 0:
                 commentKey = list(self.commentTextItems.keys())[self.currentCommentsIndex]
                 commentKeyArray = commentKey.split("|")
                 self.reddit.setComment(commentKeyArray[0])
                 comment = self.reddit.getComment()
                 self.commentSubmissionId = comment.submission.id
                 author = comment.author
-            elif self.view == "submissions":
-                focus_widget, localIndex = self.listbox.get_focus()
-                submissionId = list(self.submissionTextItems.keys())[localIndex]
+            elif self.view == "submissions" or (self.view == "comments" and self.currentCommentsIndex == 0):
+                if self.view == "submissions":
+                    focus_widget, localIndex = self.listbox.get_focus()
+                    submissionId = list(self.submissionTextItems.keys())[localIndex]
+                else:
+                    commentKey = list(self.commentTextItems.keys())[self.currentCommentsIndex]
+                    commentKeyArray = commentKey.split("|")
+                    submissionId = commentKeyArray[0]
+                
                 self.reddit.setSubmission(submissionId)
                 submission = self.reddit.getSubmission()
                 author = submission.author
@@ -586,7 +604,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         headerText = util.getHeader(self.reddit.getUsername())
         self.head.set_text(('header',[headerText, ('header', util.getMenuItems("authorComments"))]))
         # Change footer
-        footerText = "\nr/" + author.name
+        footerText = "\nu/" + author.name
         if len(author.trophies()) > 0:
             footerText += "\n"
             for trophy in author.trophies():
@@ -628,4 +646,4 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
             ])    
 
-            self.listbox.set_focus(0)
+            self.listbox.set_focus(self.currentSubmissionIndex)
