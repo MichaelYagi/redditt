@@ -36,7 +36,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.lastView = "submissions"
 
         self.content = urwid.SimpleListWalker([
-            urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+            urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.submissionTextItems.values()
         ])
 
         self.listbox = urwid.ListBox(self.content)
@@ -76,7 +76,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                                 localIndex = self.SUBLIST_LIMIT-1
                                 self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex-(self.SUBLIST_LIMIT-1), self.submissionItems, self.SUBLIST_LIMIT)
                                 self.content[:] = urwid.SimpleListWalker([
-                                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                                    urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.submissionTextItems.values()
                                 ])
                             
                         submissionIndex = 1 if self.currentSubmissionIndex == 0 else self.currentSubmissionIndex
@@ -116,7 +116,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                                 localIndex = 0
                                 self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex, self.submissionItems, self.SUBLIST_LIMIT)
                                 self.content[:] = urwid.SimpleListWalker([
-                                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                                    urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.submissionTextItems.values()
                                 ])
                         
                         if self.currentSubmissionIndex < len(self.submissionItems):
@@ -147,7 +147,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 self.view = "submissions"
 
                 self.content[:] = urwid.SimpleListWalker([
-                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                    urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.submissionTextItems.values()
                 ])
 
                 self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
@@ -301,7 +301,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 submissionId = list(self.submissionTextItems.keys())[localIndex]
                 self.submissionTextItems[submissionId] = urwid.Text(updatedStr)
                 self.content[:] = urwid.SimpleListWalker([
-                    urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                    urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.submissionTextItems.values()
                 ])
         elif self.view == "comments":
             commentValue = list(self.commentTextItems.values())[localIndex]
@@ -342,7 +342,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
                 self.commentTextItems[commentKey] = updatedText
                 self.content[:] = urwid.SimpleListWalker([
-                    urwid.AttrMap(w, None, 'reveal focus') for w in self.commentTextItems.values()
+                    urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.commentTextItems.values()
                 ])
         
         self.listbox.set_focus(localIndex)
@@ -565,7 +565,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.view = "comments"
 
         self.content[:] = urwid.SimpleListWalker([
-            urwid.AttrMap(w, None, 'reveal focus') for w in self.commentTextItems.values()
+            urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.commentTextItems.values()
         ])
 
         self.currentCommentsIndex = 0
@@ -601,7 +601,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.authorCommentTextItems = util.createAuthorCommentList(author, self.SUBMISSION_LIST_LIMIT)
         self.authorTextItems = main.getAuthorCommentTextList(self.currentAuthorCommentIndex, self.authorCommentTextItems, self.SUBLIST_LIMIT)
         self.content[:] = urwid.SimpleListWalker([
-            urwid.AttrMap(w, None, 'reveal focus') for w in self.authorTextItems.values()
+            urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.authorTextItems.values()
         ])
         self.listbox.set_focus(0)
 
@@ -648,7 +648,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             self.foot.set_text(footerText)
 
             self.content[:] = urwid.SimpleListWalker([
-                urwid.AttrMap(w, None, 'reveal focus') for w in self.submissionTextItems.values()
+                urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.submissionTextItems.values()
             ])    
 
             self.listbox.set_focus(self.currentSubmissionIndex)
