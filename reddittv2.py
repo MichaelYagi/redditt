@@ -152,7 +152,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
                 self.listbox.set_focus(int(repr(self.currentSubmissionIndex)[-1]))
             elif (key == 'k' and self.lastView == "comments"):
-                self.__initComments("best", self.commentSubmissionId)
+                self.__initComments("best", self.commentSubmissionId, key)
             elif (key == 'b' and self.view == "comments"):
                 self.__initComments("best", self.commentSubmissionId)
             elif (key == 'n' and self.view == "comments"):
@@ -529,13 +529,16 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         return comTextItems
 
     # Get comments
-    def __initComments(self, sorting, submissionId):
+    def __initComments(self, sorting, submissionId, key=None):
         if submissionId == None:
             focus_widget, localIndex = self.listbox.get_focus()
 
             # Get the submission ID
             submissionId = list(self.submissionTextItems.keys())[localIndex]
             self.commentSubmissionId = submissionId
+        
+        if key != 'k':
+            self.currentCommentsIndex = 0
 
         self.reddit.setSubmission(submissionId)
         submission = self.reddit.getSubmission()
@@ -568,7 +571,6 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             urwid.AttrMap(w, 'data body', 'reveal focus') for w in self.commentTextItems.values()
         ])
 
-        self.currentCommentsIndex = 0
         if len(comments) > 0:
             # Go to top then shift down to be able see top level submission
             self.listbox.set_focus(self.currentCommentsIndex)

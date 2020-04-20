@@ -185,7 +185,7 @@ def createSubmissionsList(submissions):
 def getMenuItems(viewType):
     if viewType == "comments":
         return [
-            ('menu option', '[b]'),'est ',
+            ('menu option', '[b]'), 'est ',
             ('menu option', '[n]'), 'ew ',
             ('menu option', '[c]'), 'ontroversial ',
             ('menu option', '[t]'), 'op\n',
@@ -204,7 +204,7 @@ def getMenuItems(viewType):
         ]
     elif viewType == "commentSubmission":
         return [
-            ('menu option', '[b]'),'est ',
+            ('menu option', '[b]'), 'est ',
             ('menu option', '[n]'), 'ew ',
             ('menu option', '[c]'), 'ontroversial ',
             ('menu option', '[t]'), 'op\n',
@@ -216,7 +216,7 @@ def getMenuItems(viewType):
         ]
     elif viewType == "submission":
         return [
-            ('menu option', '[h]'),'ot ',
+            ('menu option', '[h]'), 'ot ',
             ('menu option', '[r]'), 'ising ',
             ('menu option', '[n]'), 'ew ',
             ('menu option', '[c]'), 'ontroversial ',
@@ -232,7 +232,7 @@ def getMenuItems(viewType):
         ]
     elif viewType == "authorComments":
         return [
-            'bac',
+            ('menu option', ''), 'bac',
             ('menu option', '[k]'), ' ',
             ('menu option', '[q]'), 'uit\n\n'
         ]
