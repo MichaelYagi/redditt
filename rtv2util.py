@@ -253,7 +253,7 @@ def getPalette():
         ('header', 'dark green', 'black'),
         ('reveal focus', 'yellow', 'default', 'standout'),
         ('data body', 'dark green', 'default'),
-        ('data info', 'light gray', 'default', 'default'),
+        ('data info', 'white', 'default', 'default'),
         ('data info bold', 'light cyan', 'default', 'bold'),
         ('boxMessage', 'dark cyan', 'black'),
         ('boxError', 'dark red', 'black'),
