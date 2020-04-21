@@ -3,7 +3,7 @@ import urwid
 import re
 import platform
 import rtv2util as util
-import reddittv2 as reditt
+import reddittv2 as redditt
 
 class Screen(urwid.raw_display.Screen):
 
@@ -49,7 +49,7 @@ def getAuthorCommentTextList(currentIndex, commentItems, sublistLimit):
 
     return textList
 
-reddittApplication = reditt.ReddittApplication()
+reddittApplication = redditt.ReddittApplication()
 
 screen = Screen()
 

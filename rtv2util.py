@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import urwid
 import praw
-import reddittmain as main
 from collections import OrderedDict
 from datetime import datetime
+import reddittmain as main
 
 SUBMISSION_VIEW = "submissions"
 COMMENT_VIEW = "comments"
