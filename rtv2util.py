@@ -16,6 +16,7 @@ FOCUS_PALETTE = "reveal focus"
 DATA_BODY_PALETTE = "data body"
 DATA_INFO_PALETTE = "data info"
 DATA_INFO_SELECT_PALETTE = "data info bold"
+DATA_INFO_WARNING = "data info warning"
 DIALOG_MESSAGE_PALETTE = "boxMessage"
 DIALOG_ERROR_PALETTE = "boxError"
 MENU_OPTION_PALETTE = "menu option"
@@ -167,15 +168,25 @@ def createSubmissionsList(submissions):
         
         # Subreddit
         subreddit = "r/" + submission.subreddit.display_name
+        nsfw = ""
+        nsfwText = ""
+        spoilers = ""
+        spoilersText = ""
+        upvote = ""
+        downvote = ""
         if submission.over_18:
-            subreddit += " NSFW"
+            nsfwText = " NSFW"
+            nsfw = (DATA_INFO_WARNING, nsfwText)
         if submission.spoiler:
-            subreddit += " SPOILERS"
+            spoilersText = " SPOILERS"
+            spoilers = (DATA_INFO_WARNING, spoilersText)
         if submission.likes is not None:
             if submission.likes:
-                subreddit += " " + u"\u2191"
+                upvote = " " + u"\u2191"
             elif not submission.likes:
-                subreddit += " " + u"\u2193"
+                downvote = " " + u"\u2193"
+        leftJustification = 35 - len(subreddit+nsfwText+spoilersText+upvote+downvote)
+        subreddit = [subreddit, nsfw, spoilers, upvote, downvote.ljust(leftJustification)]
                 
         # Author
         author = ""
@@ -192,10 +203,7 @@ def createSubmissionsList(submissions):
         if submission.num_comments != 1:
             commentCount += "s"
 
-        footer = subreddit.ljust(35)
-        footer += author.ljust(24)
-        footer += pointString.ljust(20)
-        footer += commentCount + "\n"
+        footer = [subreddit, author.ljust(24), pointString.ljust(20), commentCount + "\n"]
         
         # highlighted focus color not fully transparent!!
         output = [title,(DATA_INFO_PALETTE, footer)]
@@ -276,6 +284,7 @@ def getPalette():
         (FOCUS_PALETTE, 'yellow', 'default', 'standout'),
         (DATA_BODY_PALETTE, 'light green', 'default'),
         (DATA_INFO_PALETTE, 'light gray', 'default', 'default'),
+        (DATA_INFO_WARNING, 'light red', 'default', 'default'),
         (DATA_INFO_SELECT_PALETTE, 'light cyan', 'default', 'bold'),
         (DIALOG_MESSAGE_PALETTE, 'dark cyan', 'black'),
         (DIALOG_ERROR_PALETTE, 'dark red', 'black'),
