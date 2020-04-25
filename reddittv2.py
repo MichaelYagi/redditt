@@ -521,7 +521,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         body = "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
 
         output = [authorName, (util.DATA_INFO_PALETTE, head), body]
-        content = main.SelectableText(output)
+        content = urwid.LineBox(main.SelectableText(output), tlcorner='', tline='', lline='│', trcorner='', blcorner='└', rline='', bline='─', brcorner='')
         comment_with_padding = urwid.Padding(content, 'left', 'pack', None, offset, 0)
         comTextItems.append(comment.id+"|"+str(offset), comment_with_padding)
 
@@ -560,7 +560,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             textList.append(urwid.Divider(u'-'))
             textList.append(urwid.Text((util.HEADER_PALETTE, submission.selftext)))
 
-        textList.append(urwid.Divider(u'=', 0, 1))
+        textList.append(urwid.Divider(u'─', 0, 1))
 
         submissionText = urwid.Pile(textList)
 
