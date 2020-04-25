@@ -490,6 +490,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
     def process_comment(self, comment, author, comTextItems, depth=0):
         head = ""
         offset = depth
+        offset = offset * util.COMMENT_OFFSET
 
         # Test offset
         # head += " offset: " + str(offset) + " "
@@ -497,6 +498,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         authorText = ""
         if offset == 0:
             authorText += ":"
+
         authorText += "u/" + str(comment.author)
         attribute = util.DATA_INFO_PALETTE
         if author == str(comment.author):

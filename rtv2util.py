@@ -25,6 +25,8 @@ DIALOG_SUBREDDIT_TITLE = "Subreddit"
 DIALOG_REPLY_TITLE = "Reply"
 DIALOG_COMMENT_TITLE = "Comment"
 
+COMMENT_OFFSET = 3
+
 # Dialog Window
 class DialogComponents():
     def __init__(self):
@@ -272,7 +274,7 @@ def getPalette():
     return [
         (HEADER_PALETTE, 'dark green', 'black'),
         (FOCUS_PALETTE, 'yellow', 'default', 'standout'),
-        (DATA_BODY_PALETTE, 'dark green', 'default'),
+        (DATA_BODY_PALETTE, 'light green', 'default'),
         (DATA_INFO_PALETTE, 'light gray', 'default', 'default'),
         (DATA_INFO_SELECT_PALETTE, 'light cyan', 'default', 'bold'),
         (DIALOG_MESSAGE_PALETTE, 'dark cyan', 'black'),
