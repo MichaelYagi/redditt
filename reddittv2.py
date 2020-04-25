@@ -548,14 +548,23 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
         comTextItems = util.CustomOrderedDict({})
         
-        submissionText = "u/" + str(submission.author.name)
-        submissionText += "\n" + str(submission.title)
+        preSelfText = "u/" + str(submission.author.name)
+        preSelfText += "\n" + str(submission.title)
+
         if len(submission.url) > 0:
-            submissionText += "\n" + submission.url
+            preSelfText += "\n" + submission.url
+
+        textList = [urwid.Text(preSelfText)]
+
         if len(submission.selftext) > 0:
-            submissionText += "\n----------\n" + submission.selftext
-        submissionText += "\n==========\n"
-        comTextItems.append(str(submissionId) + "|comment_title", main.SelectableText(submissionText))
+            textList.append(urwid.Divider(u'-'))
+            textList.append(urwid.Text((util.HEADER_PALETTE, submission.selftext)))
+
+        textList.append(urwid.Divider(u'=', 0, 1))
+
+        submissionText = urwid.Pile(textList)
+
+        comTextItems.append(str(submissionId) + "|comment_title", submissionText)
         self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems, str(submission.author.name))
 
         headerText = util.getHeader(self.reddit.getUsername())
