@@ -172,8 +172,13 @@ def createSubmissionsList(submissions):
         nsfwText = ""
         spoilers = ""
         spoilersText = ""
+        stickied = ""
+        stickiedText = ""
         upvote = ""
         downvote = ""
+        if submission.stickied:
+            stickiedText = " STICKIED"
+            stickied = (DATA_INFO_SELECT_PALETTE, stickiedText)
         if submission.over_18:
             nsfwText = " NSFW"
             nsfw = (DATA_INFO_WARNING, nsfwText)
@@ -185,8 +190,8 @@ def createSubmissionsList(submissions):
                 upvote = " " + u"\u2191"
             elif not submission.likes:
                 downvote = " " + u"\u2193"
-        leftJustification = 35 - len(subreddit+nsfwText+spoilersText+upvote+downvote)
-        subreddit = [subreddit, nsfw, spoilers, upvote, downvote.ljust(leftJustification)]
+        leftJustification = 40 - len(subreddit+stickiedText+nsfwText+spoilersText+upvote+downvote)
+        subreddit = [subreddit, stickied, nsfw, spoilers, upvote, downvote.ljust(leftJustification)]
                 
         # Author
         author = ""
