@@ -559,11 +559,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems, str(submission.author.name))
 
         headerText = util.getHeader(self.reddit.getUsername())
-        
-        if len(comTextItems)-1 > 0:
-            self.head.set_text((util.HEADER_PALETTE,[headerText, (util.HEADER_PALETTE, util.getMenuItems(util.COMMENT_SUBMISSION_VIEW))]))    
-        else:
-            self.head.set_text((util.HEADER_PALETTE,[headerText, (util.HEADER_PALETTE, util.getMenuItems(util.SUBMISSION_VIEW))]))    
+
+        self.head.set_text((util.HEADER_PALETTE,[headerText, (util.HEADER_PALETTE, util.getMenuItems(util.COMMENT_SUBMISSION_VIEW))]))    
 
         self.foot.set_text("\nr/" + str(submission.subreddit))
 
