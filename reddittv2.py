@@ -551,7 +551,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
         comTextItems = util.CustomOrderedDict({})
         
-        textList = [(util.DATA_INFO_PALETTE, "u/" + str(submission.author.name))]
+        submissionLink = "https://www.reddit.com/comments/" + submissionId + "/"
+        textList = [(util.DATA_INFO_PALETTE, "u/" + str(submission.author.name + " - " + submissionLink))]
         textList.append("\n" + util.encodeString(submission.title))
 
         if len(str(submission.url)) > 0:
