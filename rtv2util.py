@@ -26,6 +26,13 @@ DIALOG_SUBREDDIT_TITLE = "Subreddit"
 DIALOG_REPLY_TITLE = "Reply"
 DIALOG_COMMENT_TITLE = "Comment"
 
+NSFW_TEXT = "NSFW"
+SPOILERS_TEXT = "SPOILERS"
+STICKIED_TEXT = "STICKIEDS"
+SUBMISSION_SUBREDDIT_LJUST = 40
+SUBMISSION_AUTHOR_LJUST = 24
+SUBMISSION_POINTS_LJUST = 20
+
 COMMENT_OFFSET = 3
 
 # Dialog Window
@@ -177,20 +184,20 @@ def createSubmissionsList(submissions):
         upvote = ""
         downvote = ""
         if submission.stickied:
-            stickiedText = " STICKIED"
+            stickiedText = " " + STICKIED_TEXT
             stickied = (DATA_INFO_SELECT_PALETTE, stickiedText)
         if submission.over_18:
-            nsfwText = " NSFW"
+            nsfwText = " " + NSFW_TEXT
             nsfw = (DATA_INFO_WARNING, nsfwText)
         if submission.spoiler:
-            spoilersText = " SPOILERS"
+            spoilersText = " " + SPOILERS_TEXT
             spoilers = (DATA_INFO_WARNING, spoilersText)
         if submission.likes is not None:
             if submission.likes:
                 upvote = " " + u"\u2191"
             elif not submission.likes:
                 downvote = " " + u"\u2193"
-        leftJustification = 40 - len(subreddit+stickiedText+nsfwText+spoilersText+upvote+downvote)
+        leftJustification = SUBMISSION_SUBREDDIT_LJUST - len(subreddit+stickiedText+nsfwText+spoilersText+upvote+downvote)
         subreddit = [subreddit, stickied, nsfw, spoilers, upvote, downvote.ljust(leftJustification)]
                 
         # Author
@@ -208,7 +215,7 @@ def createSubmissionsList(submissions):
         if submission.num_comments != 1:
             commentCount += "s"
 
-        footer = [subreddit, author.ljust(24), pointString.ljust(20), commentCount + "\n"]
+        footer = [subreddit, author.ljust(SUBMISSION_AUTHOR_LJUST), pointString.ljust(SUBMISSION_POINTS_LJUST), commentCount + "\n"]
         
         # highlighted focus color not fully transparent!!
         output = [title,(DATA_INFO_PALETTE, footer)]

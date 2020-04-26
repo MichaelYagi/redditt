@@ -278,7 +278,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
                 for index, submissionInfoText in enumerate(submissionInfoArray):
                     # Subreddit
-                    if index == 0 or submissionInfoText == "NSFW" or submissionInfoText == "SPOILERS" or submissionInfoText == "STICKIED":
+                    if index == 0 or submissionInfoText == util.NSFW_TEXT or submissionInfoText == util.SPOILERS_TEXT or submissionInfoText == util.STICKIED_TEXT:
                         submissionSubreddit += submissionInfoText + " "
                     # Author
                     elif submissionInfoText.startswith('u/'):
@@ -294,7 +294,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                     submissionSubreddit += u"\u2191"
                 elif key == "d":
                     submissionSubreddit += u"\u2193"
-                updatedSubmissionInfo = submissionSubreddit.strip().ljust(35) + submissionAuthor.ljust(24) + submissionPoints.ljust(20) + submissionCommentCount
+                updatedSubmissionInfo = submissionSubreddit.strip().ljust(util.SUBMISSION_SUBREDDIT_LJUST) + submissionAuthor.ljust(util.SUBMISSION_AUTHOR_LJUST) + submissionPoints.ljust(util.SUBMISSION_POINTS_LJUST) + submissionCommentCount
 
                 updatedStr = submissionTitle + "\n" + updatedSubmissionInfo + "\n"
                     
