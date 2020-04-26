@@ -278,7 +278,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
                 for index, submissionInfoText in enumerate(submissionInfoArray):
                     # Subreddit
-                    if index == 0 or submissionInfoText == "NSFW" or submissionInfoText == "SPOILERS":
+                    if index == 0 or submissionInfoText == "NSFW" or submissionInfoText == "SPOILERS" or submissionInfoText == "STICKIED":
                         submissionSubreddit += submissionInfoText + " "
                     # Author
                     elif submissionInfoText.startswith('u/'):
@@ -521,7 +521,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         body = "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
 
         output = [authorName, (util.DATA_INFO_PALETTE, head), body]
-        content = urwid.LineBox(main.SelectableText(output), tlcorner='', tline='', lline='│', trcorner='', blcorner='└', rline='', bline='─', brcorner='')
+        # content = urwid.LineBox(main.SelectableText(output), tlcorner='', tline='', lline='│', trcorner='', blcorner='└', rline='', bline='─', brcorner='')
+        content = main.SelectableText(output)
         comment_with_padding = urwid.Padding(content, 'left', 'pack', None, offset, 0)
         comTextItems.append(comment.id+"|"+str(offset), comment_with_padding)
 
@@ -548,23 +549,19 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
         comTextItems = util.CustomOrderedDict({})
         
-        preSelfText = "u/" + str(submission.author.name)
-        preSelfText += "\n" + str(submission.title)
+        textList = ["u/" + str(submission.author.name)]
+        textList.append("\n" + str(submission.title))
 
-        if len(submission.url) > 0:
-            preSelfText += "\n" + submission.url
-
-        textList = [urwid.Text(preSelfText)]
+        if len(str(submission.url)) > 0:
+            textList.append("\n" + str(submission.url))
 
         if len(submission.selftext) > 0:
-            textList.append(urwid.Divider(u'-'))
-            textList.append(urwid.Text((util.HEADER_PALETTE, submission.selftext)))
+            textList.append((util.HEADER_PALETTE, "\n\n" + str(submission.selftext)))
 
-        textList.append(urwid.Divider(u'─', 0, 1))
+        #textList.append(urwid.Divider(u'─', 0, 1))
+        textList.append("\n────────────────────────\n")
 
-        submissionText = urwid.Pile(textList)
-
-        comTextItems.append(str(submissionId) + "|comment_title", submissionText)
+        comTextItems.append(str(submissionId) + "|comment_title", main.SelectableText(textList))
         self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems, str(submission.author.name))
 
         headerText = util.getHeader(self.reddit.getUsername())
