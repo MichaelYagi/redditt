@@ -138,9 +138,14 @@ class Redditt():
         self.submission.comment_sort = sort
         return self.submission.comments
 
+# Encode strings to ascii
+def encodeString(strToEncode):
+    # or encode('ascii', 'ignore').decode('ascii')
+    return strToEncode.encode('ascii', 'replace').decode('utf-8')
+
 # Format UTC string
-def datetime_from_utc_to_local(utc_datetime):
-    return datetime.utcfromtimestamp(int(utc_datetime)).strftime('%Y-%m-%d %H:%M:%S')
+def datetimeToString(utcDatetimeString):
+    return datetime.utcfromtimestamp(int(utcDatetimeString)).strftime('%Y-%m-%d %H:%M:%S')
 
 # Creates a list of author comment texts used for display, keyed by submission ID
 def createAuthorCommentList(author, submissionListLimit):
@@ -148,7 +153,7 @@ def createAuthorCommentList(author, submissionListLimit):
     
     for index, comment in enumerate(author.comments.new(limit=submissionListLimit)):
         # Comment
-        body = comment.body + "/n"
+        body = encodeString(comment.body) + "/n"
 
         # Points
         points = str(comment.score) + " point"
@@ -156,7 +161,7 @@ def createAuthorCommentList(author, submissionListLimit):
             points +=  "s"
 
         # Comment time
-        commentTime = datetime_from_utc_to_local(comment.created_utc)
+        commentTime = datetimeToString(comment.created_utc)
 
         # Subreddit
         subreddit = comment.subreddit.display_name
@@ -171,7 +176,7 @@ def createSubmissionsList(submissions):
     subItems = CustomOrderedDict({})
     
     for index, submission in enumerate(submissions):
-        title = submission.title + "\n"
+        title = encodeString(submission.title) + "\n"
         
         # Subreddit
         subreddit = "r/" + submission.subreddit.display_name

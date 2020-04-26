@@ -520,7 +520,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         if comment.gilded > 0:
             head += " " + str(comment.gilded) + " gilded" 
         
-        body = "\n"+comment.body.encode('ascii', 'ignore').decode('ascii') + "\n"
+        body = "\n"+util.encodeString(comment.body) + "\n"
 
         output = [authorName, (util.DATA_INFO_PALETTE, head), body]
         # content = urwid.LineBox(main.SelectableText(output), tlcorner='', tline='', lline='│', trcorner='', blcorner='└', rline='', bline='─', brcorner='')
@@ -552,13 +552,13 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         comTextItems = util.CustomOrderedDict({})
         
         textList = [(util.DATA_INFO_PALETTE, "u/" + str(submission.author.name))]
-        textList.append("\n" + str(submission.title))
+        textList.append("\n" + util.encodeString(submission.title))
 
         if len(str(submission.url)) > 0:
             textList.append("\n" + str(submission.url))
 
         if len(submission.selftext) > 0:
-            textList.append((util.HEADER_PALETTE, "\n\n" + str(submission.selftext)))
+            textList.append((util.HEADER_PALETTE, "\n\n" + util.encodeString(submission.selftext)))
 
         #textList.append(urwid.Divider(u'─', 0, 1))
         textList.append("\n" + ("─" * int(main.getScreen().get_cols_rows()[0])) + "\n")
