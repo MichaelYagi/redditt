@@ -559,8 +559,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             textList.append((util.HEADER_PALETTE, "\n\n" + str(submission.selftext)))
 
         #textList.append(urwid.Divider(u'─', 0, 1))
-        textList.append("\n────────────────────────\n")
-
+        textList.append("\n" + ("─" * int(main.getScreen().get_cols_rows()[0])) + "\n")
         comTextItems.append(str(submissionId) + "|comment_title", main.SelectableText(textList))
         self.commentTextItems = self.__commentsToDictionary(comments, False, 0, comTextItems, str(submission.author.name))
 

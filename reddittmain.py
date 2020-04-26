@@ -49,9 +49,15 @@ def getAuthorCommentTextList(currentIndex, commentItems, sublistLimit):
 
     return textList
 
+def getScreen():
+    return screen
+
 def start():
     global reddittApplication
     reddittApplication = redditt.ReddittApplication()
 
+    global screen
+    screen = Screen()
+
     # Disable mouse input
-    urwid.MainLoop(reddittApplication, util.getPalette(), screen=Screen(), handle_mouse=False).run()
+    urwid.MainLoop(reddittApplication, util.getPalette(), screen=screen, handle_mouse=False).run()
