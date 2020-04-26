@@ -223,6 +223,8 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             elif key == 'esc':
                 self.original_widget = self.original_widget[0]
                 self.dialogBoxOpen = False
+            elif key == 'enter':
+                self.process_inputs(self.dialogComponents, None)
 
     def find_comment_parent(self, type):
         parentFound = False
