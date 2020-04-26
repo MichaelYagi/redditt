@@ -140,8 +140,8 @@ class Redditt():
 
 # Encode strings to ascii
 def encodeString(strToEncode):
-    # or encode('ascii', 'ignore').decode('ascii')
-    return strToEncode.encode('ascii', 'replace').decode('utf-8')
+    # strToEncode.encode('ascii', 'replace').decode('utf-8')
+    return str(strToEncode)
 
 # Format UTC string
 def datetimeToString(utcDatetimeString):
