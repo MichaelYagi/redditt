@@ -95,9 +95,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
                         self.listbox.set_focus(localIndex)
                 else:
-                    if localIndex > 0:
-                        localIndex -= 1    
-                    self.listbox.set_focus(localIndex)
+                    if (self.view == util.AUTHOR_COMMENT_VIEW and len(self.authorTextItems.values()) > 0) or (self.view == util.COMMENT_VIEW and len(self.commentTextItems.values()) > 0):
+                        if localIndex > 0:
+                            localIndex -= 1    
+                        self.listbox.set_focus(localIndex)
             elif key == 'down':
                 focus_widget, localIndex = self.listbox.get_focus()
 
@@ -133,9 +134,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                             self.head.set_wrap_mode('clip')
                         self.listbox.set_focus(localIndex)
                 else:
-                    if localIndex < (len(self.authorTextItems.values())-1):
-                        localIndex += 1
-                    self.listbox.set_focus(localIndex)
+                    if len(self.authorTextItems.values()) > 0:
+                        if localIndex < (len(self.authorTextItems.values())-1):
+                            localIndex += 1
+                        self.listbox.set_focus(localIndex)
             elif (key == 'enter' and self.view == util.SUBMISSION_VIEW):
                 self.__initComments("best", None)
             elif key == 'k' and (self.view == util.COMMENT_VIEW or self.lastView == util.SUBMISSION_VIEW):
@@ -221,8 +223,9 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             if key != 'enter' and key != 'esc':
                 return super(ReddittApplication, self).keypress(size, key)
             elif key == 'esc':
-                self.original_widget = self.original_widget[0]
+                self.dialogComponents = None
                 self.dialogBoxOpen = False
+                self.original_widget = self.original_widget[0]
             elif key == 'enter':
                 self.process_inputs(self.dialogComponents, None)
 
@@ -551,7 +554,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
 
         comTextItems = util.CustomOrderedDict({})
         
-        submissionLink = "https://www.reddit.com/comments/" + submissionId + "/"
+        submissionLink = util.getCommentLink(submission.permalink)
         textList = [(util.DATA_INFO_PALETTE, "u/" + str(submission.author.name + " - " + submissionLink))]
         textList.append("\n" + util.encodeString(submission.title))
 
@@ -612,7 +615,9 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.content[:] = urwid.SimpleListWalker([
             urwid.AttrMap(w, util.DATA_BODY_PALETTE, util.FOCUS_PALETTE) for w in self.authorTextItems.values()
         ])
-        self.listbox.set_focus(0)
+
+        if len(self.authorTextItems) > 0:
+            self.listbox.set_focus(0)
 
         # Change header
         headerText = util.getHeader(self.reddit.getUsername())

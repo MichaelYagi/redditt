@@ -138,6 +138,11 @@ class Redditt():
         self.submission.comment_sort = sort
         return self.submission.comments
 
+def getCommentLink(permaLink):
+    link = "https://www.reddit.com" + permaLink
+    
+    return link
+
 # Encode strings to ascii
 def encodeString(strToEncode):
     # strToEncode.encode('ascii', 'replace').decode('utf-8')
@@ -153,7 +158,7 @@ def createAuthorCommentList(author, submissionListLimit):
     
     for index, comment in enumerate(author.comments.new(limit=submissionListLimit)):
         # Comment
-        body = encodeString(comment.body) + "/n"
+        body = encodeString(comment.body)
 
         # Points
         points = str(comment.score) + " point"
@@ -166,7 +171,10 @@ def createAuthorCommentList(author, submissionListLimit):
         # Subreddit
         subreddit = comment.subreddit.display_name
 
-        output =  [body + "\n",(DATA_INFO_PALETTE, points.ljust(20) + "r/" + subreddit.ljust(20) + commentTime + "\n")]
+        # Context link
+        contextLink = getCommentLink(comment.permalink)
+
+        output =  [body + "\n",(DATA_INFO_PALETTE, points.ljust(20) + "r/" + subreddit.ljust(20) + commentTime.ljust(23) + contextLink + "\n")]
         subItems.append(comment.id, output)
 
     return subItems
