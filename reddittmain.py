@@ -49,6 +49,19 @@ def getAuthorCommentTextList(currentIndex, commentItems, sublistLimit):
 
     return textList
 
+# Gets a subset of the Author Submission List used for pagination
+def getAuthorSubmissionTextList(currentIndex, submissionItems, sublistLimit):
+    textList = util.CustomOrderedDict({})
+
+    for index,(submissionId,output) in enumerate(submissionItems.items()):
+        if index >= currentIndex and index < (currentIndex+sublistLimit):
+            
+            textList.append(submissionId,SelectableText(output))
+        elif index >= (currentIndex+sublistLimit):
+            break
+
+    return textList
+
 def getScreen():
     return screen
 

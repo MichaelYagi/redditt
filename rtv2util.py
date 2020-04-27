@@ -179,6 +179,33 @@ def createAuthorCommentList(author, submissionListLimit):
 
     return subItems
 
+# Creates a list of author submission texts used for display, keyed by submission ID
+def createAuthorSubmissionList(author, submissionListLimit):
+    subItems = CustomOrderedDict({})
+    
+    for index, submission in enumerate(author.submissions.new(limit=submissionListLimit)):
+        # Title
+        body = encodeString(submission.title)
+
+        # Points
+        points = str(submission.score) + " point"
+        if submission.score != 1:
+            points +=  "s"
+
+        # Submission time
+        submissionTime = datetimeToString(submission.created_utc)
+
+        # Subreddit
+        subreddit = submission.subreddit.display_name
+
+        # Context link
+        contextLink = getCommentLink(submission.permalink)
+
+        output =  [body + "\n",(DATA_INFO_PALETTE, points.ljust(20) + "r/" + subreddit.ljust(20) + submissionTime.ljust(23) + contextLink + "\n")]
+        subItems.append(submission.id, output)
+
+    return subItems
+
 # Creates a list of submission texts used for display, keyed by submission ID
 def createSubmissionsList(submissions):
     subItems = CustomOrderedDict({})
@@ -289,7 +316,9 @@ def getMenuItems(viewType):
         return [
             (MENU_OPTION_PALETTE, ''), 'bac',
             (MENU_OPTION_PALETTE, '[k]'), ' ',
-            (MENU_OPTION_PALETTE, '[q]'), 'uit\n\n'
+            (MENU_OPTION_PALETTE, '[q]'), 'uit\n',
+            (MENU_OPTION_PALETTE, '[c]'), 'omments',
+            (MENU_OPTION_PALETTE, '[s]'), 'ubmissions\n\n'
         ]
 
 # Get the banner text

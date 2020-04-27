@@ -25,6 +25,9 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         self.currentSubmissionIndex = 0
         self.currentCommentsIndex = 0
         self.currentAuthorCommentIndex = 0
+        self.currentAuthorSubmissionIndex = 0
+
+        self.author = None
 
         self.submissionItems = util.createSubmissionsList(self.submissions)
         self.submissionTextItems = main.getSubmissionTextList(self.currentSubmissionIndex, self.submissionItems, self.SUBLIST_LIMIT)
@@ -165,6 +168,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 self.__initComments("controversial", self.commentSubmissionId)
             elif key == 'a' and (self.view == util.COMMENT_VIEW or self.view == util.SUBMISSION_VIEW):
                 self.__initAuthor(None)
+            elif key == 'c' and (self.view == util.AUTHOR_COMMENT_VIEW):
+                self.__initAuthor(self.author, util.COMMENT_VIEW)
+            elif key == 's' and (self.view == util.AUTHOR_COMMENT_VIEW):
+                self.__initAuthor(self.author, util.SUBMISSION_VIEW)
             elif key == 'h' and self.view == util.SUBMISSION_VIEW:
                 self.__initSubmissions(self.subreddit,"hot")
             elif key == 'n' and self.view == util.SUBMISSION_VIEW:
@@ -438,6 +445,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 exists = False
 
             if exists == True:
+                self.author = author
                 self.__initAuthor(author)
                 self.dialogComponents = None
                 self.original_widget = self.original_widget[0]
@@ -586,8 +594,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
             self.listbox.set_focus(self.currentCommentsIndex)
 
     # Get author
-    def __initAuthor(self, author):
-        self.lastView = self.view
+    def __initAuthor(self, author, viewType=util.COMMENT_VIEW):
+        if self.view != util.AUTHOR_COMMENT_VIEW:
+            self.lastView = self.view
+
         if author == None:
             if self.view == util.COMMENT_VIEW and self.currentCommentsIndex > 0:
                 commentKey = list(self.commentTextItems.keys())[self.currentCommentsIndex]
@@ -595,7 +605,7 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 self.reddit.setComment(commentKeyArray[0])
                 comment = self.reddit.getComment()
                 self.commentSubmissionId = comment.submission.id
-                author = comment.author
+                self.author = comment.author
             elif self.view == util.SUBMISSION_VIEW or (self.view == util.COMMENT_VIEW and self.currentCommentsIndex == 0):
                 if self.view == util.SUBMISSION_VIEW:
                     focus_widget, localIndex = self.listbox.get_focus()
@@ -607,11 +617,17 @@ class ReddittApplication(urwid.WidgetPlaceholder):
                 
                 self.reddit.setSubmission(submissionId)
                 submission = self.reddit.getSubmission()
-                author = submission.author
+                self.author = submission.author
 
-        self.currentAuthorCommentIndex = 0
-        self.authorCommentTextItems = util.createAuthorCommentList(author, self.SUBMISSION_LIST_LIMIT)
-        self.authorTextItems = main.getAuthorCommentTextList(self.currentAuthorCommentIndex, self.authorCommentTextItems, self.SUBLIST_LIMIT)
+        if viewType == util.COMMENT_VIEW:
+            self.currentAuthorCommentIndex = 0
+            self.authorCommentTextItems = util.createAuthorCommentList(self.author, self.SUBMISSION_LIST_LIMIT)
+            self.authorTextItems = main.getAuthorCommentTextList(self.currentAuthorCommentIndex, self.authorCommentTextItems, self.SUBLIST_LIMIT)
+        else:
+            self.currentAuthorSubmissionIndex = 0
+            self.authorSubmissionTextItems = util.createAuthorSubmissionList(self.author, self.SUBMISSION_LIST_LIMIT)
+            self.authorTextItems = main.getAuthorSubmissionTextList(self.currentAuthorSubmissionIndex, self.authorSubmissionTextItems, self.SUBLIST_LIMIT)
+
         self.content[:] = urwid.SimpleListWalker([
             urwid.AttrMap(w, util.DATA_BODY_PALETTE, util.FOCUS_PALETTE) for w in self.authorTextItems.values()
         ])
@@ -623,10 +639,10 @@ class ReddittApplication(urwid.WidgetPlaceholder):
         headerText = util.getHeader(self.reddit.getUsername())
         self.head.set_text((util.HEADER_PALETTE,[headerText, (util.HEADER_PALETTE, util.getMenuItems(util.AUTHOR_COMMENT_VIEW))]))
         # Change footer
-        footerText = "\nu/" + author.name
-        if len(author.trophies()) > 0:
+        footerText = "\nu/" + self.author.name
+        if len(self.author.trophies()) > 0:
             footerText += "\n"
-            for trophy in author.trophies():
+            for trophy in self.author.trophies():
                 footerText += trophy.name + ", "
             footerText = footerText[:-2]
 
