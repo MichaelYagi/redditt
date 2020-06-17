@@ -8,7 +8,7 @@ import reddittv2 as redditt
 class Screen(urwid.raw_display.Screen):
 
     def write(self, data):
-        if "Microsoft" in platform.platform():
+        if "microsoft" in platform.platform().lower():
             # replace urwid's SI/SO, which produce artifacts under WSL.
             # https://github.com/urwid/urwid/issues/264#issuecomment-358633735
             # Above link describes the change.
